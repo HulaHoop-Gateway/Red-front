@@ -1,51 +1,25 @@
 "use client"
+import { count } from 'console';
 import Image from 'next/image';
-import { RadialBarChart, RadialBar, Legend } from 'recharts';
+import { RadialBarChart, RadialBar, Legend, ResponsiveContainer } from 'recharts';
 
-// #region Sample data
+// 나중에 차트 추가할 때 다시 쓸 예정
 const data = [
     {
-        name: '18-24',
-        uv: 31.47,
-        pv: 2400,
-        fill: '#8884d8',
+        name:'전체',
+        count:100,
+        fill:'#FFF'
     },
     {
-        name: '25-29',
-        uv: 26.69,
-        pv: 4567,
-        fill: '#83a6ed',
+        name: '오작동 서버',
+        count: 20,
+        fill: '#F87171',
     },
     {
-        name: '30-34',
-        uv: 15.69,
-        pv: 1398,
-        fill: '#8dd1e1',
-    },
-    {
-        name: '35-39',
-        uv: 8.22,
-        pv: 9800,
-        fill: '#82ca9d',
-    },
-    {
-        name: '40-49',
-        uv: 8.63,
-        pv: 3908,
-        fill: '#a4de6c',
-    },
-    {
-        name: '50+',
-        uv: 2.63,
-        pv: 4800,
-        fill: '#d0ed57',
-    },
-    {
-        name: 'unknown',
-        uv: 6.67,
-        pv: 4800,
-        fill: '#ffc658',
-    },
+        name: '작동 서버',
+        count: 80,
+        fill: '#FAE27C',
+    }
 ];
 
 const CountChart = () => {
@@ -57,29 +31,27 @@ const CountChart = () => {
                 <Image src="/moreDark.png" alt='' width={20} height={20} />
             </div>
             {/* 차트 */}
-            <div className="w-full h-[75%]">
-                <RadialBarChart
-                    style={{ width: '100%', maxWidth: '700px', maxHeight: '80vh', aspectRatio: 1.618 }}
-                    responsive
-                    cx="30%"
-                    barSize={14}
-                    data={data}
-                >
-                    <RadialBar label={{ position: 'insideStart', fill: '#fff' }} background dataKey="uv" />
-                    <Legend iconSize={10} layout="vertical" verticalAlign="middle"/>
-                </RadialBarChart>
+            <div className='relative w-full h-[75%]'>
+                <ResponsiveContainer>
+                    <RadialBarChart cx="50%" cy="50%" innerRadius="40%" outerRadius="100%" barSize={32} data={data}>
+                        <RadialBar
+                        // label={{ position:'insideStart' , fill:'#FFF'}}
+                            background
+                            dataKey="count"
+                        />
+                    </RadialBarChart>
+                </ResponsiveContainer>
+                <Image src="/maleFemale.png" alt='나중에 교체 할 예정' width={50} height={50} className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'/>
             </div>
             {/* 아래 */}
-            <div className="flex justify-center gap-16">
-                <div className="flex flex-col gap-1">
-                    <div className="w-5 h-5 bg-lamaSky rounded-full" />
-                    <h1 className='font-bold'>1,234</h1>
-                    <h2 className='text-xs text-gray-300'>AI (55%)</h2>
+            <div className="mt-3 flex justify-center gap-16">
+                <div className="flex flex-col items-center gap-2">
+                    <div className="w-6 h-6 bg-red-400 rounded-full" />
+                    <h1 className='font-bold'>오작동</h1>
                 </div>
-                <div className="flex flex-col gap-1">
-                    <div className="w-5 h-5 bg-lamaYellow rounded-full" />
-                    <h1 className='font-bold'>1,234</h1>
-                    <h2 className='text-xs text-gray-300'>H/G (55%)</h2>
+                <div className="flex flex-col items-center gap-2">
+                    <div className="w-6 h-6 bg-lamaYellow rounded-full" />
+                    <h1 className='font-bold'>작동</h1>
                 </div>
             </div>
         </div>
