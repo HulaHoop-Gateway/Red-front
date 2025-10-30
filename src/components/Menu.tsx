@@ -96,19 +96,19 @@ const menuItems = [
     items: [
       {
         icon: "/profile.png",
-        label: "Profile",
+        label: "프로필",
         href: "/profile",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/setting.png",
-        label: "Settings",
+        label: "설정",
         href: "/settings",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/logout.png",
-        label: "Logout",
+        label: "로그아웃",
         href: "/logout",
         visible: ["admin", "teacher", "student", "parent"],
       },
@@ -118,15 +118,15 @@ const menuItems = [
 
 const Menu = () => {
   return (
-    <div className="mt-4 text-sm">
+    <div className="mt-3 text-lg">
       {menuItems.map(i=>(
         <div className="flex flex-col gap-2" key={i.title}>
-          <span className="hidden lg:block text-gray-400 font-light my-4">
+          <span className="hidden lg:block text-gray-400 font-light my-3">
             {i.title}
           </span>
           {i.items.map(item=>(
-            <Link href={item.href} key={item.label} className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2">
-            <Image src={item.icon} alt="메뉴바 이미지" width={20} height={20}/>
+            <Link href={item.href} key={item.label} className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-1.5">
+            <Image src={item.icon} alt="메뉴바 이미지" width={25} height={25}/>
             <span className="hidden lg:block">{item.label}</span> 
             </Link>
           ))}

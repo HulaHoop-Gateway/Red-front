@@ -1,5 +1,9 @@
 import CountChart from "@/components/CountChart"
+import DailyTransactionChart from "@/components/DailyTransactionChart"
+import EventCalender from "@/components/EventCalender"
+import MonthlyTransactionChart from "@/components/MonthlyTransactionChart"
 import UserCard from "@/components/UserCard"
+import UserCardLineChart from "@/components/UserCardLineChart"
 
 const AdminPage = () => {
   return (
@@ -15,18 +19,24 @@ const AdminPage = () => {
       </div>
       {/*중간 차트 */}
       <div className="flex gap-4 flex-col lg:flex-row">
-        {/* 상태 체크 차트 */}
-        <div className="w-full lg:w-1/3 h-[450px]">
-        <CountChart/>
+        {/* 일별 거래 차트 */}
+        <div className="w-full lg:w-1/2 h-[450px]">
+        <DailyTransactionChart/>
         </div>
-        {/* 수입 그래프 차트 */}
-        <div className="w-full lg:w-2/3 h-[450px]"></div>
+        {/*월별 거래 차트 */}
+        <div className="w-full lg:w-1/2 h-[450px]">
+        <MonthlyTransactionChart />
+        </div>
       </div>
-      {/* 아래 차트 */}
-      <div className=""></div>
+      {/* 선 그래프 차트 */}
+      <div className="w-full h-[500px]">
+        <UserCardLineChart/>
+      </div>
       </div>
       {/* 오른쪽 */}
-      <div className="w-full lg:w-1/3">r</div>
+      <div className="w-full lg:w-1/3 flex flex-col gap-8">
+      <EventCalender />
+      </div>
     </div>
   )
 }

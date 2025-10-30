@@ -1,7 +1,7 @@
-const UserPage = () => {
+const Page = () => {
   return (
-    <div className=''>UserPage</div>
+    <div className=''>Page</div>
   )
 }
 
-export default UserPage
+export default Page
