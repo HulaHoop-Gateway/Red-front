@@ -10,7 +10,7 @@ export default function DashboardLayout({
 }>) {
   return (
       <div className="h-[133vh] flex">
-        {/* 왼쪽 화면 */}
+        {/* 왼쪽 메뉴바 화면 */}
         <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] p-4">
         <Link
          href="/" 

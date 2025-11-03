@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+//메뉴바 목록
 const menuItems = [
   {
     title: "메뉴",
