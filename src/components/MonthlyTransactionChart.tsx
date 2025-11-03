@@ -32,6 +32,7 @@ const data = [
   }
 ];
 
+//월별 거래 차트
 const MonthlyTransactionChart = () => {
   return (
     <div className='bg-white rounded-lg p-4 h-full'>

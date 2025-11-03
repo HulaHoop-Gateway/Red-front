@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-// #region Sample data
+//샘플 데이터
 const data = [
   { name: '1월', user: 1200, merchant: 3400, apiRequest: 5200, hgProcess: 2100 },
   { name: '2월', user: 1450, merchant: 2700, apiRequest: 6100, hgProcess: 3300 },
