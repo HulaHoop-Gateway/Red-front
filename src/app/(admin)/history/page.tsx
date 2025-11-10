@@ -12,6 +12,7 @@ const TransactionListPage = () => {
         const res = await fetch("http://localhost:8000/api/transactions");
         if (!res.ok) throw new Error("데이터 요청 실패");
         const data = await res.json();
+        console.log("백엔드 응답:", data); // ✅ 확인용 로그
         setTransactions(data);
       } catch (err) {
         console.error("이용내역 불러오기 실패:", err);
@@ -20,25 +21,17 @@ const TransactionListPage = () => {
     fetchTransactions();
   }, []);
 
-  // 검색 필터 (회원코드, 가맹점코드, 금액, 날짜)
+  // ✅ 검색 필터 (카멜 표기 기준)
   const filtered = transactions.filter(
     (t) =>
-      t.member_code?.includes(search) ||
-      t.merchant_code?.includes(search) ||
-      t.amount_used?.toString().includes(search) ||
-      t.payment_date?.includes(search)
+      t.memberCode?.includes(search) ||
+      t.merchantCode?.includes(search) ||
+      t.amountUsed?.toString().includes(search) ||
+      t.paymentDate?.includes(search)
   );
 
   return (
-    <div
-      className="
-        w-screen h-[134dvh]
-        flex flex-col items-center
-        bg-gradient-to-br from-[#f77062] to-[#fe5196]
-        font-['Pretendard']
-        overflow-hidden
-      "
-    >
+    <div className="w-screen min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-[#f77062] to-[#fe5196] font-['Pretendard'] overflow-hidden">
       {/* 상단 헤더 */}
       <div className="flex justify-between items-center w-full px-12 pt-8 text-white">
         <h1 className="text-3xl font-bold select-none">
@@ -57,18 +50,10 @@ const TransactionListPage = () => {
       </div>
 
       {/* 가운데 카드 */}
-      <div
-        className="
-          bg-white/20 backdrop-blur-md
-          rounded-3xl shadow-2xl
-          mt-12 px-10 py-8
-          w-[90%] max-w-[1200px]
-          flex flex-col items-center
-        "
-      >
-        <h2 className="text-white text-2xl font-semibold mb-8">이용내역 조회</h2>
+      <div className="bg-white/20 backdrop-blur-md rounded-3xl shadow-2xl mt-12 px-10 py-8 w-[90%] max-w-[1200px] flex flex-col items-center">
+        <h2 className="text-white text-2xl font-semibold mb-8">💳 이용내역 조회</h2>
 
-        {/* 검색 영역 */}
+        {/* 검색창 */}
         <div className="flex items-center gap-3 mb-8 self-start">
           <label className="text-white text-sm font-semibold">검색 :</label>
           <input
@@ -78,15 +63,12 @@ const TransactionListPage = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <button className="bg-white text-gray-800 px-4 py-2 rounded-md font-semibold hover:bg-gray-100 transition text-sm">
-            검색
-          </button>
         </div>
 
         {/* 테이블 */}
-        <div className="w-full overflow-hidden rounded-2xl shadow-lg">
-          <table className="w-full text-center bg-white">
-            <thead className="bg-gradient-to-r from-[#f77062] to-[#fe5196] text-white text-sm">
+        <div className="w-full overflow-x-auto rounded-2xl shadow-lg">
+          <table className="w-full text-center bg-white text-sm">
+            <thead className="bg-gradient-to-r from-[#f77062] to-[#fe5196] text-white">
               <tr>
                 <th className="py-3">거래번호</th>
                 <th>회원코드</th>
@@ -98,7 +80,7 @@ const TransactionListPage = () => {
                 <th>종료일</th>
               </tr>
             </thead>
-            <tbody className="text-gray-700 text-sm">
+            <tbody className="text-gray-700">
               {filtered.length > 0 ? (
                 filtered.map((t, idx) => (
                   <tr
@@ -107,30 +89,30 @@ const TransactionListPage = () => {
                       idx % 2 === 0 ? "bg-gray-50" : "bg-white"
                     } hover:bg-pink-50 transition`}
                   >
-                    <td className="py-3">{t.transation_num}</td>
-                    <td>{t.member_code}</td>
-                    <td>{t.merchant_code}</td>
-                    <td>{t.amount_used.toLocaleString()}원</td>
-                    <td>{t.payment_date}</td>
+                    <td className="py-3">{t.transationNum}</td>
+                    <td>{t.memberCode}</td>
+                    <td>{t.merchantCode}</td>
+                    <td>{t.amountUsed ? t.amountUsed.toLocaleString() : 0}원</td>
+                    <td>{t.paymentDate}</td>
                     <td>
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          t.status === 1
+                          t.status === "S"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {t.status === 1 ? "Success" : "Failed"}
+                        {t.status === "S" ? "Success" : "Refund/Cancelled"}
                       </span>
                     </td>
-                    <td>{t.start_date}</td>
-                    <td>{t.end_date}</td>
+                    <td>{t.startDate}</td>
+                    <td>{t.endDate}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td colSpan={8} className="py-10 text-gray-500">
-                    이용내역 데이터가 없습니다.
+                    📭 이용내역 데이터가 없습니다.
                   </td>
                 </tr>
               )}
