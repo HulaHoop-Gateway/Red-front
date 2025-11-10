@@ -3,17 +3,14 @@
 import { useEffect, useState } from "react";
 
 interface Merchant {
-  merchant_code: string;
-  merchant_name: string;
-  business_id: string;
-  category_name: string;
-  registration_date: string;
-  termination_date: string;
-  contract_status: string;
-  category_code: string;
-  transaction_count?: number;
-  total_amount?: number;
-  percent?: number;
+  merchantCode: string;
+  merchantName: string;
+  businessId: string;
+  categoryName: string;
+  registrationDate: string;
+  terminationDate: string;
+  contractStatus: string;
+  categoryCode: string;
 }
 
 export default function MerchantListPage() {
@@ -23,7 +20,7 @@ export default function MerchantListPage() {
   useEffect(() => {
     const fetchMerchants = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/merchants/usage-stats");
+        const res = await fetch("http://localhost:8000/api/merchants");
         if (!res.ok) throw new Error("데이터 요청 실패");
         const data = await res.json();
         setMerchants(data);
@@ -34,17 +31,17 @@ export default function MerchantListPage() {
     fetchMerchants();
   }, []);
 
-  const filtered = merchants.filter(
-    (m) =>
-      m.merchant_name?.includes(search) ||
-      m.merchant_code?.includes(search) ||
-      m.business_id?.includes(search)
-  );
+  const filtered = merchants
+    .filter((m) => m && typeof m === "object")
+    .filter(
+      (m) =>
+        m.merchantName?.includes(search) ||
+        m.merchantCode?.includes(search) ||
+        m.businessId?.includes(search)
+    );
 
   return (
-    <div
-      className="w-screen min-h-screen flex flex-col items-center bg-gradient-to-br from-[#f77062] to-[#fe5196] font-['Pretendard'] overflow-hidden"
-    >
+    <div className="w-screen min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-[#f77062] to-[#fe5196] font-['Pretendard'] overflow-hidden">
       {/* 헤더 */}
       <div className="flex justify-between items-center w-full px-12 pt-8 text-white">
         <h1 className="text-3xl font-bold select-none">
@@ -60,9 +57,11 @@ export default function MerchantListPage() {
         </button>
       </div>
 
-      {/* 본문 카드 */}
+      {/* 메인 카드 */}
       <div className="bg-white/20 backdrop-blur-md rounded-3xl shadow-2xl mt-12 px-10 py-8 w-[90%] max-w-[1200px] flex flex-col items-center">
-        <h2 className="text-white text-2xl font-semibold mb-8">가맹점 매출 현황</h2>
+        <h2 className="text-white text-2xl font-semibold mb-8">
+          🏪 가맹점 운영 정보
+        </h2>
 
         {/* 검색창 */}
         <div className="flex items-center gap-3 mb-8 self-start">
@@ -77,50 +76,46 @@ export default function MerchantListPage() {
         </div>
 
         {/* 테이블 */}
-        <div className="w-full overflow-hidden rounded-2xl shadow-lg">
-          <table className="w-full text-center bg-white">
-            <thead className="bg-gradient-to-r from-[#f77062] to-[#fe5196] text-white text-sm">
+        <div className="w-full overflow-x-auto rounded-2xl shadow-lg">
+          <table className="w-full text-center bg-white text-sm">
+            <thead className="bg-gradient-to-r from-[#f77062] to-[#fe5196] text-white">
               <tr>
-                <th className="py-3">가맹점코드</th>
+                <th className="py-3">카테고리</th>
+                <th>가맹점코드</th>
                 <th>가맹점명</th>
-                <th>거래건수</th>
-                <th>총금액</th>
-                <th>점유율(%)</th>
-                <th>카테고리</th>
                 <th>계약상태</th>
+                <th>계약기간</th>
               </tr>
             </thead>
-            <tbody className="text-gray-700 text-sm">
+            <tbody className="text-gray-700">
               {filtered.length > 0 ? (
                 filtered.map((m, idx) => (
                   <tr
                     key={idx}
-                    className={`${idx % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-pink-50 transition`}
+                    className={`${
+                      idx % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    } hover:bg-pink-50 transition`}
                   >
-                    <td className="py-3">{m.merchant_code}</td>
-                    <td>{m.merchant_name}</td>
-                    <td>{m.transaction_count?.toLocaleString() ?? 0}</td>
-                    <td>{m.total_amount?.toLocaleString() ?? 0} 원</td>
-                    <td className="font-semibold text-pink-600">
-                      {m.percent?.toFixed(2) ?? 0}%
-                    </td>
-                    <td>{m.category_name}</td>
+                    <td className="py-3">{m.categoryName}</td>
+                    <td>{m.merchantCode}</td>
+                    <td>{m.merchantName}</td>
                     <td>
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          m.contract_status === "Y"
+                          m.contractStatus === "Y"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {m.contract_status === "Y" ? "Active" : "Terminated"}
+                        {m.contractStatus === "Y" ? "Active" : "Terminated"}
                       </span>
                     </td>
+                    <td>{`${m.registrationDate} ~ ${m.terminationDate}`}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="py-10 text-gray-500">
+                  <td colSpan={5} className="py-10 text-gray-500">
                     📭 데이터가 없습니다.
                   </td>
                 </tr>
