@@ -16,7 +16,7 @@ export default function DashboardLayout({
          href="/" 
          className="flex items-center justify-center lg:justify-center gap-2"
          >
-        <Image src="/logo.png" alt="훌라후프 레드 로고" width={120} height={120}/>
+        <Image className="mt-3" src="/logo.png" alt="훌라후프 레드 로고" width={180} height={180}/>
         </Link>
         <Menu/>
         </div>

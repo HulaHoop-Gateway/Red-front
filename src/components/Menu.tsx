@@ -8,44 +8,44 @@ const menuItems = [
     items: [
       {
         icon: "/home.png",
-        label: "Home",
-        href: "/",
+        label: "대시보드",
+        href: "/dashboard",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
+        icon: "/parent.png",
+        label: "통계",
+        href: "/statistics",
+        visible: ["admin", "teacher"],
+      },
+      {
         icon: "/teacher.png",
-        label: "Teachers",
-        href: "/list/teachers",
+        label: "이용내역",
+        href: "/history",
         visible: ["admin", "teacher"],
       },
       {
         icon: "/student.png",
-        label: "Students",
-        href: "/list/students",
+        label: "가맹점 정보",
+        href: "/merchant",
         visible: ["admin", "teacher"],
       },
       {
-        icon: "/parent.png",
-        label: "Parents",
-        href: "/list/parents",
+        icon: "/class.png",
+        label: "회원 정보",
+        href: "/user",
         visible: ["admin", "teacher"],
       },
       {
         icon: "/subject.png",
-        label: "Subjects",
-        href: "/list/subjects",
+        label: "서버 모니터링",
+        href: "/status",
         visible: ["admin"],
       },
       {
-        icon: "/class.png",
-        label: "Classes",
-        href: "/list/classes",
-        visible: ["admin", "teacher"],
-      },
-      {
         icon: "/lesson.png",
-        label: "Lessons",
-        href: "/list/lessons",
+        label: "스케쥴",
+        href: "/schedule",
         visible: ["admin", "teacher"],
       },
       {
@@ -78,18 +78,18 @@ const menuItems = [
         href: "/list/events",
         visible: ["admin", "teacher", "student", "parent"],
       },
-      {
-        icon: "/message.png",
-        label: "Messages",
-        href: "/list/messages",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/announcement.png",
-        label: "Announcements",
-        href: "/list/announcements",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
+      // {
+      //   icon: "/message.png",
+      //   label: "Messages",
+      //   href: "/list/messages",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
+      // {
+      //   icon: "/announcement.png",
+      //   label: "Announcements",
+      //   href: "/list/announcements",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
     ],
   },
   {
@@ -110,7 +110,7 @@ const menuItems = [
       {
         icon: "/logout.png",
         label: "로그아웃",
-        href: "/logout",
+        href: "/",
         visible: ["admin", "teacher", "student", "parent"],
       },
     ],
@@ -119,14 +119,14 @@ const menuItems = [
 
 const Menu = () => {
   return (
-    <div className="mt-3 text-lg">
+    <div className="mt-4 text-lg">
       {menuItems.map(i=>(
         <div className="flex flex-col gap-2" key={i.title}>
-          <span className="hidden lg:block text-gray-400 font-light my-3">
+          <span className="hidden lg:block text-gray-400 font-light my-4">
             {i.title}
           </span>
           {i.items.map(item=>(
-            <Link href={item.href} key={item.label} className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-1.5">
+            <Link href={item.href} key={item.label} className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-md hover:bg-lamaSkyLight">
             <Image src={item.icon} alt="메뉴바 이미지" width={25} height={25}/>
             <span className="hidden lg:block">{item.label}</span> 
             </Link>
