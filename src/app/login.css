@@ -1,0 +1,56 @@
+/* =============================
+   🌌 로그인 페이지 전용 스타일
+   ============================= */
+
+/* 배경 라이트 움직임 */
+@keyframes floatSoft {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(20px) translateX(10px); }
+  }
+  
+  /* 로고/폼 위로 등장 */
+  @keyframes fadeUpSlow {
+    0% {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .animate-floatSoft {
+    animation: floatSoft 10s ease-in-out infinite;
+  }
+  
+  .animate-fadeUpSlow {
+    animation: fadeUpSlow 1.4s ease-out forwards;
+  }
+  
+  /* glow 효과 */
+  @keyframes glowPulseSoft {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.4)); }
+    50% { filter: drop-shadow(0 0 18px rgba(255, 0, 0, 0.7)); }
+  }
+  
+  .animate-glowPulseSoft {
+    animation: glowPulseSoft 4s ease-in-out infinite 1.8s;
+  }
+  
+  /* 로그인 전용 줌 리셋 */
+  .login-page {
+    zoom: 1 !important;
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom right, #000, #140000, #2b0000);
+    color: #fff;
+    font-family: 'Pretendard', sans-serif;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  
