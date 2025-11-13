@@ -148,6 +148,9 @@ const MerchantListPage = () => {
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="Sort" width={14} height={14} />
             </button>
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+              <Image src="/plus.png" alt="Sort" width={14} height={14} />
+            </button>
             {role === "admin" && (
               <FormModal table="merchant" type="create" />
             )}
