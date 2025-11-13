@@ -1,7 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
+import Table from "@/components/Table";
+import TableSearch from "@/components/TableSearch";
+import Pagination from "@/components/Pagination";
+import Image from "next/image";
 
 interface Statistics {
+  id: string; // Unique ID for React key
   merchantCode: string;
   merchantName: string;
   paymentDate: string;
@@ -13,6 +18,47 @@ interface Statistics {
   netAmount: number;
   ratioPercentage: number;
 }
+
+const columns = [
+  {
+    header: "가맹점 정보",
+    accessor: "info",
+  },
+  {
+    header: "거래 횟수",
+    accessor: "transactionCount",
+    className: "hidden md:table-cell",
+  },
+  {
+    header: "거래 비중(%)",
+    accessor: "transactionRatio",
+    className: "hidden lg:table-cell",
+  },
+  {
+    header: "총 금액",
+    accessor: "totalAmount",
+    className: "hidden lg:table-cell",
+  },
+  {
+    header: "환불 건수",
+    accessor: "refundCount",
+    className: "hidden lg:table-cell",
+  },
+  {
+    header: "환불 금액",
+    accessor: "refundAmount",
+    className: "hidden lg:table-cell",
+  },
+  {
+    header: "순매출액",
+    accessor: "netAmount",
+    className: "hidden lg:table-cell",
+  },
+  {
+    header: "매출 비중(%)",
+    accessor: "ratioPercentage",
+  },
+];
 
 export default function StatisticsPage() {
   const [statistics, setStatistics] = useState<Statistics[]>([]);
@@ -31,7 +77,8 @@ export default function StatisticsPage() {
       const res = await fetch(`http://localhost:8000/api/statistics?${params}`);
       if (!res.ok) throw new Error("데이터를 불러올 수 없습니다.");
       const data = await res.json();
-      const normalized: Statistics[] = data.map((item: any) => ({
+      const normalized: Statistics[] = data.map((item: any, index: number) => ({
+        id: `${item.merchantCode}-${item.paymentDate}-${index}`, // 고유 ID 생성
         merchantCode: item.merchantCode ?? "-",
         merchantName: item.merchantName ?? "-",
         paymentDate: item.paymentDate ?? "-",
@@ -55,70 +102,68 @@ export default function StatisticsPage() {
     fetchStatistics();
   }, []);
 
-  if (loading)
-    return <div className="text-center text-gray-600 mt-20 animate-pulse">📊 통계 데이터를 불러오는 중...</div>;
-  if (error)
-    return <div className="text-center text-red-500 mt-20">⚠️ 오류 발생: {error}</div>;
+  const renderRow = (item: Statistics) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
+    >
+      <td className="flex items-center gap-4 p-4">
+        <Image
+          src={"/assignment.png"} // 통계 아이콘
+          alt={item.merchantName}
+          width={40}
+          height={40}
+          className="md:hidden xl:block w-10 h-10 rounded-full object-cover"
+        />
+        <div className="flex flex-col">
+          <h3 className="font-semibold">{item.merchantName}</h3>
+          <p className="text-xs text-gray-500">{item.paymentDate}</p>
+        </div>
+      </td>
+      <td className="hidden md:table-cell">{item.transactionCount.toLocaleString()}</td>
+      <td className="hidden lg:table-cell">{item.transactionRatio.toFixed(2)}%</td>
+      <td className="hidden lg:table-cell">{item.totalAmount.toLocaleString()} 원</td>
+      <td className="hidden lg:table-cell">{item.refundCount}</td>
+      <td className="hidden lg:table-cell">{item.refundAmount.toLocaleString()} 원</td>
+      <td className="hidden lg:table-cell">{item.netAmount.toLocaleString()} 원</td>
+      <td>{item.ratioPercentage.toFixed(2)}%</td>
+    </tr>
+  );
+
+  if (loading) {
+    return (
+      <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0 flex justify-center items-center">
+        <p>📊 통계 데이터를 불러오는 중...</p>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0 flex justify-center items-center">
+        <p>⚠️ 오류 발생: {error}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-screen min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-[#f77062] to-[#fe5196] font-['Pretendard'] overflow-hidden">
-      {/* 헤더 */}
-      <div className="flex justify-between items-center w-full px-12 pt-8 text-white">
-        <h1 className="text-3xl font-bold select-none">Hulahoop<span className="text-blue-400">.Red</span></h1>
-        <div className="text-sm text-right leading-tight">
-          세션남은시간 : <span className="font-semibold">30:00분</span><br />관리자님, 반갑습니다.
-        </div>
-        <button className="bg-white text-gray-700 px-5 py-2 rounded-full font-semibold shadow hover:bg-gray-100 transition">로그아웃</button>
-      </div>
-
-      {/* 카드 */}
-      <div className="bg-white/20 backdrop-blur-md rounded-3xl shadow-2xl mt-12 px-10 py-8 w-[90%] max-w-[1200px] flex flex-col items-center">
-        <h2 className="text-white text-2xl font-semibold mb-6">📊 이용 통계 (가맹점별 · 일자별)</h2>
-
-        {/* 기간 필터 */}
-        <div className="flex gap-3 mb-6 text-gray-800">
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="px-3 py-2 rounded-md border border-gray-300 text-sm" />
-          <span className="text-white font-semibold mt-2">~</span>
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-3 py-2 rounded-md border border-gray-300 text-sm" />
-          <button onClick={() => fetchStatistics(startDate, endDate)} className="bg-white text-[#f77062] px-4 py-2 rounded-md font-semibold shadow hover:bg-pink-50 transition">검색</button>
-        </div>
-
-        {/* 테이블 */}
-        <div className="w-full overflow-x-auto rounded-2xl shadow-lg">
-          <table className="w-full text-center bg-white text-sm">
-            <thead className="bg-gradient-to-r from-[#f77062] to-[#fe5196] text-white">
-              <tr>
-                <th className="py-3">가맹점명</th>
-                <th>결제일</th>
-                <th>거래 횟수</th>
-                <th>거래 비중(%)</th>
-                <th>총 금액</th>
-                <th>환불 건수</th>
-                <th>환불 금액</th>
-                <th>순매출액</th>
-                <th>매출 비중(%)</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-700">
-              {statistics.length > 0 ? statistics.map((s, i) => (
-                <tr key={i} className={`${i % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-pink-50 transition`}>
-                  <td className="py-3">{s.merchantName}</td>
-                  <td>{s.paymentDate}</td>
-                  <td>{s.transactionCount.toLocaleString()}</td>
-                  <td>{s.transactionRatio.toFixed(2)}%</td>
-                  <td>{s.totalAmount.toLocaleString()} 원</td>
-                  <td className="text-red-500">{s.refundCount}</td>
-                  <td className="text-red-500">{s.refundAmount.toLocaleString()} 원</td>
-                  <td className="font-semibold text-blue-600">{s.netAmount.toLocaleString()} 원</td>
-                  <td className="font-semibold text-purple-600">{s.ratioPercentage.toFixed(2)}%</td>
-                </tr>
-              )) : (
-                <tr><td colSpan={9} className="py-10 text-gray-500">📭 통계 데이터가 없습니다.</td></tr>
-              )}
-            </tbody>
-          </table>
+    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
+      {/* 상단 */}
+      <div className="flex items-center justify-between">
+        <h1 className="hidden md:block text-lg font-semibold">이용 통계</h1>
+        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+          <TableSearch />
+          <div className="flex items-center gap-2">
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="px-3 py-2 rounded-md border border-gray-300 text-sm" />
+            <span>~</span>
+            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-3 py-2 rounded-md border border-gray-300 text-sm" />
+            <button onClick={() => fetchStatistics(startDate, endDate)} className="bg-lamaYellow text-white px-4 py-2 rounded-md font-semibold shadow hover:bg-yellow-600 transition">검색</button>
+          </div>
         </div>
       </div>
+      {/* 목록 */}
+      <Table columns={columns} renderRow={renderRow} data={statistics} />
+      {/* 페이지네이션 */}
+      <Pagination />
     </div>
   );
 }

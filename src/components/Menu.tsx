@@ -48,36 +48,36 @@ const menuItems = [
         href: "/schedule",
         visible: ["admin", "teacher"],
       },
-      {
-        icon: "/exam.png",
-        label: "Exams",
-        href: "/list/exams",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/assignment.png",
-        label: "Assignments",
-        href: "/list/assignments",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/result.png",
-        label: "Results",
-        href: "/list/results",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/attendance.png",
-        label: "Attendance",
-        href: "/list/attendance",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/calendar.png",
-        label: "Events",
-        href: "/list/events",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
+      // {
+      //   icon: "/exam.png",
+      //   label: "Exams",
+      //   href: "/list/exams",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
+      // {
+      //   icon: "/assignment.png",
+      //   label: "Assignments",
+      //   href: "/list/assignments",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
+      // {
+      //   icon: "/result.png",
+      //   label: "Results",
+      //   href: "/list/results",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
+      // {
+      //   icon: "/attendance.png",
+      //   label: "Attendance",
+      //   href: "/list/attendance",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
+      // {
+      //   icon: "/calendar.png",
+      //   label: "Events",
+      //   href: "/list/events",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
       // {
       //   icon: "/message.png",
       //   label: "Messages",
@@ -121,7 +121,7 @@ const Menu = () => {
   return (
     <div className="mt-4 text-lg">
       {menuItems.map(i=>(
-        <div className="flex flex-col gap-2" key={i.title}>
+        <div className={`flex flex-col gap-2 ${i.title === "OTHER" ? "mt-72" : ""}`} key={i.title}>
           <span className="hidden lg:block text-gray-400 font-light my-4">
             {i.title}
           </span>

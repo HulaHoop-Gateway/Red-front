@@ -1,143 +1,164 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Table from "@/components/Table";
+import TableSearch from "@/components/TableSearch";
+import Pagination from "@/components/Pagination";
+import Image from "next/image";
+
+// 이용내역 데이터 타입을 정의합니다.
+interface Transaction {
+  id: string; // React key로 사용할 고유 ID
+  transactionNum: string;
+  memberCode: string;
+  merchantCode: string;
+  amountUsed: number;
+  paymentDate: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+}
+
+// 사용자가 요청한 8개 컬럼을 정의합니다.
+const columns = [
+  {
+    header: "거래번호",
+    accessor: "transactionNum",
+  },
+  {
+    header: "회원코드",
+    accessor: "memberCode",
+    className: "hidden md:table-cell",
+  },
+  {
+    header: "가맹점코드",
+    accessor: "merchantCode",
+    className: "hidden lg:table-cell",
+  },
+  {
+    header: "결제금액",
+    accessor: "amountUsed",
+    className: "hidden md:table-cell",
+  },
+  {
+    header: "결제일자",
+    accessor: "paymentDate",
+    className: "hidden lg:table-cell",
+  },
+  {
+    header: "상태",
+    accessor: "status",
+    className: "hidden lg:table-cell",
+  },
+  {
+    header: "시작일",
+    accessor: "startDate",
+    className: "hidden lg:table-cell",
+  },
+  {
+    header: "종료일",
+    accessor: "endDate",
+    className: "hidden lg:table-cell",
+  },
+];
 
 const TransactionListPage = () => {
-  const [transactions, setTransactions] = useState<any[]>([]);
-  const [search, setSearch] = useState("");
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
 
   useEffect(() => {
     const fetchTransactions = async () => {
+      setLoading(true);
+      setError(null);
       try {
+        // TODO: 향후 날짜 필터 파라미터를 API 요청에 추가해야 합니다.
         const res = await fetch("http://localhost:8000/api/transactions");
-        if (!res.ok) throw new Error("데이터 요청 실패");
+        if (!res.ok) {
+          throw new Error("데이터를 불러오는 데 실패했습니다.");
+        }
         const data = await res.json();
-        console.log("백엔드 응답:", data); // ✅ 확인용 로그
-        setTransactions(data);
-      } catch (err) {
-        console.error("이용내역 불러오기 실패:", err);
+        // API 응답의 오타(transationNum)를 바로잡고 id를 할당합니다.
+        const transactionsWithId = data.map((t: any) => ({
+          ...t,
+          id: t.transationNum,
+          transactionNum: t.transationNum,
+        }));
+        setTransactions(transactionsWithId);
+      } catch (err: any) {
+        setError(err.message ?? "알 수 없는 오류 발생");
+      } finally {
+        setLoading(false);
       }
     };
     fetchTransactions();
   }, []);
 
-  // ✅ 검색 필터 (카멜 표기 기준)
-  const filtered = transactions.filter(
-    (t) =>
-      t.memberCode?.includes(search) ||
-      t.merchantCode?.includes(search) ||
-      t.amountUsed?.toString().includes(search) ||
-      t.paymentDate?.includes(search)
+  // 각 행을 렌더링하는 함수입니다.
+  const renderRow = (item: Transaction) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
+    >
+      <td className="p-4">{item.transactionNum}</td>
+      <td className="hidden md:table-cell">{item.memberCode}</td>
+      <td className="hidden lg:table-cell">{item.merchantCode}</td>
+      <td className="hidden md:table-cell">{item.amountUsed.toLocaleString()}원</td>
+      <td className="hidden lg:table-cell">{item.paymentDate}</td>
+      <td className="hidden lg:table-cell">
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-semibold ${
+            item.status === "S"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
+          {item.status === "S" ? "Success" : "Refund/Cancelled"}
+        </span>
+      </td>
+      <td className="hidden lg:table-cell">{item.startDate}</td>
+      <td className="hidden lg:table-cell">{item.endDate}</td>
+    </tr>
   );
 
+  if (loading) {
+    return (
+      <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0 flex justify-center items-center">
+        <p>⏳ 이용내역 데이터를 불러오는 중...</p>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0 flex justify-center items-center">
+        <p>⚠️ 오류 발생: {error}</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-screen min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-[#f77062] to-[#fe5196] font-['Pretendard'] overflow-hidden">
-      {/* 상단 헤더 */}
-      <div className="flex justify-between items-center w-full px-12 pt-8 text-white">
-        <h1 className="text-3xl font-bold select-none">
-          Hulahoop<span className="text-blue-400">.Red</span>
-        </h1>
-
-        <div className="text-sm text-right leading-tight">
-          세션남은시간 : <span className="font-semibold">30:00분</span>
-          <br />
-          관리자님, 반갑습니다.
-        </div>
-
-        <button className="bg-white text-gray-700 px-5 py-2 rounded-full font-semibold shadow hover:bg-gray-100 transition">
-          로그아웃
-        </button>
-      </div>
-
-      {/* 가운데 카드 */}
-      <div className="bg-white/20 backdrop-blur-md rounded-3xl shadow-2xl mt-12 px-10 py-8 w-[90%] max-w-[1200px] flex flex-col items-center">
-        <h2 className="text-white text-2xl font-semibold mb-8">💳 이용내역 조회</h2>
-
-        {/* 검색창 */}
-        <div className="flex items-center gap-3 mb-8 self-start">
-          <label className="text-white text-sm font-semibold">검색 :</label>
-          <input
-            type="text"
-            placeholder="회원코드, 가맹점코드, 금액, 날짜 검색"
-            className="px-4 py-2 rounded-md border border-gray-300 w-72 text-gray-700 text-sm"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-
-        {/* 테이블 */}
-        <div className="w-full overflow-x-auto rounded-2xl shadow-lg">
-          <table className="w-full text-center bg-white text-sm">
-            <thead className="bg-gradient-to-r from-[#f77062] to-[#fe5196] text-white">
-              <tr>
-                <th className="py-3">거래번호</th>
-                <th>회원코드</th>
-                <th>가맹점코드</th>
-                <th>결제금액</th>
-                <th>결제일자</th>
-                <th>상태</th>
-                <th>시작일</th>
-                <th>종료일</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-700">
-              {filtered.length > 0 ? (
-                filtered.map((t, idx) => (
-                  <tr
-                    key={idx}
-                    className={`${
-                      idx % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    } hover:bg-pink-50 transition`}
-                  >
-                    <td className="py-3">{t.transationNum}</td>
-                    <td>{t.memberCode}</td>
-                    <td>{t.merchantCode}</td>
-                    <td>{t.amountUsed ? t.amountUsed.toLocaleString() : 0}원</td>
-                    <td>{t.paymentDate}</td>
-                    <td>
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          t.status === "S"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
-                      >
-                        {t.status === "S" ? "Success" : "Refund/Cancelled"}
-                      </span>
-                    </td>
-                    <td>{t.startDate}</td>
-                    <td>{t.endDate}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={8} className="py-10 text-gray-500">
-                    📭 이용내역 데이터가 없습니다.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* 페이지네이션 */}
-        <div className="flex justify-center items-center mt-8 gap-2">
-          <button className="px-3 py-1 text-sm bg-white/30 rounded-md hover:bg-white/40 text-white">
-            이전
-          </button>
-          {[1, 2, 3, 4, 5].map((n) => (
-            <button
-              key={n}
-              className="px-3 py-1 text-sm bg-white/20 rounded-md hover:bg-white/30 text-white"
-            >
-              {n}
+    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
+      {/* 상단 */}
+      <div className="flex items-center justify-between">
+        <h1 className="hidden md:block text-lg font-semibold">전체 이용내역</h1>
+        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+          <TableSearch />
+          <div className="flex items-center gap-2">
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="px-3 py-2 rounded-md border border-gray-300 text-sm" />
+            <span>~</span>
+            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-3 py-2 rounded-md border border-gray-300 text-sm" />
+            <button className="bg-lamaYellow text-white px-4 py-2 rounded-md font-semibold shadow hover:bg-yellow-600 transition">
+              검색
             </button>
-          ))}
-          <button className="px-3 py-1 text-sm bg-white/30 rounded-md hover:bg-white/40 text-white">
-            다음
-          </button>
+          </div>
         </div>
       </div>
+      {/* 목록 */}
+      <Table columns={columns} renderRow={renderRow} data={transactions} />
+      {/* 페이지네이션 */}
+      <Pagination />
     </div>
   );
 };
