@@ -919,36 +919,36 @@ export const announcementsData = [
 // YOU SHOULD CHANGE THE DATES OF THE EVENTS TO THE CURRENT DATE TO SEE THE EVENTS ON THE CALENDAR
   // 📅 2025년 11월 10일 ~ 11월 14일 회사 일정 (한국어 버전)
 export const calendarEvents = [
-  // 월요일
-  { title: "데일리 스탠드업", allDay: false, start: new Date(2025, 10, 10, 8, 0), end: new Date(2025, 10, 10, 8, 45) },
-  { title: "스프린트 계획 회의", allDay: false, start: new Date(2025, 10, 10, 9, 0), end: new Date(2025, 10, 10, 9, 45) },
-  { title: "아키텍처 검토", allDay: false, start: new Date(2025, 10, 10, 10, 0), end: new Date(2025, 10, 10, 10, 45) },
-  { title: "백엔드 API 리뷰", allDay: false, start: new Date(2025, 10, 10, 11, 0), end: new Date(2025, 10, 10, 11, 45) },
-  { title: "운영 점검 회의", allDay: false, start: new Date(2025, 10, 10, 13, 0), end: new Date(2025, 10, 10, 13, 45) },
-  { title: "프로젝트 진행 보고", allDay: false, start: new Date(2025, 10, 10, 14, 0), end: new Date(2025, 10, 10, 14, 45) },
+  // 월요일 (2025-11-17)
+  { title: "데일리 스탠드업", allDay: false, start: new Date(2025, 10, 17, 8, 0), end: new Date(2025, 10, 17, 8, 45) },
+  { title: "스프린트 계획 회의", allDay: false, start: new Date(2025, 10, 17, 9, 0), end: new Date(2025, 10, 17, 9, 45) },
+  { title: "아키텍처 검토", allDay: false, start: new Date(2025, 10, 17, 10, 0), end: new Date(2025, 10, 17, 10, 45) },
+  { title: "백엔드 API 리뷰", allDay: false, start: new Date(2025, 10, 17, 11, 0), end: new Date(2025, 10, 17, 11, 45) },
+  { title: "운영 점검 회의", allDay: false, start: new Date(2025, 10, 17, 13, 0), end: new Date(2025, 10, 17, 13, 45) },
+  { title: "프로젝트 진행 보고", allDay: false, start: new Date(2025, 10, 17, 14, 0), end: new Date(2025, 10, 17, 14, 45) },
 
-  // 화요일
-  { title: "데일리 스탠드업", allDay: false, start: new Date(2025, 10, 11, 9, 0), end: new Date(2025, 10, 11, 9, 45) },
-  { title: "프론트엔드 동기화 회의", allDay: false, start: new Date(2025, 10, 11, 10, 0), end: new Date(2025, 10, 11, 10, 45) },
-  { title: "QA 이슈 점검", allDay: false, start: new Date(2025, 10, 11, 11, 0), end: new Date(2025, 10, 11, 11, 45) },
-  { title: "고객 지원 핸드오프", allDay: false, start: new Date(2025, 10, 11, 14, 0), end: new Date(2025, 10, 11, 14, 45) },
+  // 화요일 (2025-11-18)
+  { title: "데일리 스탠드업", allDay: false, start: new Date(2025, 10, 18, 9, 0), end: new Date(2025, 10, 18, 9, 45) },
+  { title: "프론트엔드 동기화 회의", allDay: false, start: new Date(2025, 10, 18, 10, 0), end: new Date(2025, 10, 18, 10, 45) },
+  { title: "QA 이슈 점검", allDay: false, start: new Date(2025, 10, 18, 11, 0), end: new Date(2025, 10, 18, 11, 45) },
+  { title: "고객 지원 핸드오프", allDay: false, start: new Date(2025, 10, 18, 14, 0), end: new Date(2025, 10, 18, 14, 45) },
 
-  // 수요일
-  { title: "데일리 스탠드업", allDay: false, start: new Date(2025, 10, 12, 8, 0), end: new Date(2025, 10, 12, 8, 45) },
-  { title: "데이터 파이프라인 점검", allDay: false, start: new Date(2025, 10, 12, 10, 0), end: new Date(2025, 10, 12, 10, 45) },
-  { title: "보안 패치 작업", allDay: false, start: new Date(2025, 10, 12, 13, 0), end: new Date(2025, 10, 12, 13, 45) },
-  { title: "전체 회의 (All Hands)", allDay: false, start: new Date(2025, 10, 12, 14, 0), end: new Date(2025, 10, 12, 14, 45) },
+  // 수요일 (2025-11-19)
+  { title: "데일리 스탠드업", allDay: false, start: new Date(2025, 10, 19, 8, 0), end: new Date(2025, 10, 19, 8, 45) },
+  { title: "데이터 파이프라인 점검", allDay: false, start: new Date(2025, 10, 19, 10, 0), end: new Date(2025, 10, 19, 10, 45) },
+  { title: "보안 패치 작업", allDay: false, start: new Date(2025, 10, 19, 13, 0), end: new Date(2025, 10, 19, 13, 45) },
+  { title: "전체 회의 (All Hands)", allDay: false, start: new Date(2025, 10, 19, 14, 0), end: new Date(2025, 10, 19, 14, 45) },
 
-  // 목요일
-  { title: "데일리 스탠드업", allDay: false, start: new Date(2025, 10, 13, 9, 0), end: new Date(2025, 10, 13, 9, 45) },
-  { title: "인프라 비용 검토", allDay: false, start: new Date(2025, 10, 13, 10, 0), end: new Date(2025, 10, 13, 10, 45) },
-  { title: "릴리즈 준비 회의", allDay: false, start: new Date(2025, 10, 13, 11, 0), end: new Date(2025, 10, 13, 11, 45) },
-  { title: "디자인 검토", allDay: false, start: new Date(2025, 10, 13, 14, 0), end: new Date(2025, 10, 13, 14, 45) },
+  // 목요일 (2025-11-20)
+  { title: "데일리 스탠드업", allDay: false, start: new Date(2025, 10, 20, 9, 0), end: new Date(2025, 10, 20, 9, 45) },
+  { title: "인프라 비용 검토", allDay: false, start: new Date(2025, 10, 20, 10, 0), end: new Date(2025, 10, 20, 10, 45) },
+  { title: "릴리즈 준비 회의", allDay: false, start: new Date(2025, 10, 20, 11, 0), end: new Date(2025, 10, 20, 11, 45) },
+  { title: "디자인 검토", allDay: false, start: new Date(2025, 10, 20, 14, 0), end: new Date(2025, 10, 20, 14, 45) },
 
-  // 금요일
-  { title: "데일리 스탠드업", allDay: false, start: new Date(2025, 10, 14, 8, 0), end: new Date(2025, 10, 14, 8, 45) },
-  { title: "프론트-백엔드 통합 점검", allDay: false, start: new Date(2025, 10, 14, 9, 0), end: new Date(2025, 10, 14, 9, 45) },
-  { title: "장애 대응 회고", allDay: false, start: new Date(2025, 10, 14, 11, 0), end: new Date(2025, 10, 14, 11, 45) },
-  { title: "제품 로드맵 정리", allDay: false, start: new Date(2025, 10, 14, 13, 0), end: new Date(2025, 10, 14, 13, 45) },
-  { title: "스프린트 회고", allDay: false, start: new Date(2025, 10, 14, 14, 0), end: new Date(2025, 10, 14, 14, 45) },
+  // 금요일 (2025-11-21)
+  { title: "데일리 스탠드업", allDay: false, start: new Date(2025, 10, 21, 8, 0), end: new Date(2025, 10, 21, 8, 45) },
+  { title: "프론트-백엔드 통합 점검", allDay: false, start: new Date(2025, 10, 21, 9, 0), end: new Date(2025, 10, 21, 9, 45) },
+  { title: "장애 대응 회고", allDay: false, start: new Date(2025, 10, 21, 11, 0), end: new Date(2025, 10, 21, 11, 45) },
+  { title: "제품 로드맵 정리", allDay: false, start: new Date(2025, 10, 21, 13, 0), end: new Date(2025, 10, 21, 13, 45) },
+  { title: "스프린트 회고", allDay: false, start: new Date(2025, 10, 21, 14, 0), end: new Date(2025, 10, 21, 14, 45) },
 ];
