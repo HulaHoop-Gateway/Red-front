@@ -1,4 +1,4 @@
-import Announcements from "@/components/Announcements"
+import TopQuestions from "@/components/TopQuestions";
 import CountChart from "@/components/CountChart"
 import DailyTransactionChart from "@/components/DailyTransactionChart"
 import EventCalender from "@/components/EventCalendar"
@@ -22,12 +22,19 @@ const AdminPage = () => {
       {/*중간 차트 */}
       <div className="flex gap-4 flex-col lg:flex-row">
         {/* 일별 거래 차트 */}
-        <div className="w-full lg:w-1/2 h-[450px]">
+        <div className="w-full lg:w-1/2 h-[400px]">
         <DailyTransactionChart/>
         </div>
         {/*월별 거래 차트 */}
-        <div className="w-full lg:w-1/2 h-[450px]">
+        <div className="w-full lg:w-1/2 h-[400px]">
         <MonthlyTransactionChart />
+        </div>
+        {/* /*가맹점 비율 차트 */}
+        <div className="w-full lg:w-1/2 h-[400px]">
+        <CountChart />
+        </div>
+        <div className="w-full lg:w-1/2 h-[400px]">
+        <TopQuestions />
         </div>
       </div>
       {/* 선 그래프 차트 */}

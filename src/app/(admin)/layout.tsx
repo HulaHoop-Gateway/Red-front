@@ -9,9 +9,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <div className="h-[133vh] flex">
+      <div className="h-[133.3vh] flex">
         {/* 왼쪽 메뉴바 화면 */}
-        <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] p-4">
+        <div className="w-[16%] bg-red-700 p-4 flex flex-col">
         <Link
          href="/" 
          className="flex items-center justify-center lg:justify-center gap-2"
@@ -21,7 +21,7 @@ export default function DashboardLayout({
         <Menu/>
         </div>
         {/* 오른쪽 화면 */}
-        <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-[#F7F8FA] overflow-scroll overflow-x-hidden">
+        <div className="w-[84%] bg-[#F7F8FA] overflow-scroll overflow-x-hidden">
           <Navbar/>
           {children}
         </div>
