@@ -1,12 +1,36 @@
 body {
-  zoom: 0.75
+  zoom: 0.75;
 }
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* =================================
+   로그인 페이지 ZOOM 리셋 및 애니메이션
+   ================================= */
+body.login-body-zoom-reset {
+  zoom: 1 !important;
+}
 
+/* 부드러운 등장 애니메이션 */
+@keyframes fadeUpSlow {
+  0% { transform: translateY(30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* 배경 데코레이션 은은한 움직임 */
+@keyframes floatSoft {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(15px, -15px); }
+  66% { transform: translate(-10px, 10px); }
+}
+
+/* =================================
+   기존 캘린더 컴포넌트 스타일 오버라이드
+   ================================= */
+
+/* React-Calendar */
 .react-calendar {
   width: 100% !important;
   border: none !important;
@@ -22,6 +46,7 @@ body {
   color: black !important;
 }
 
+/* React-Big-Calendar (RBC) */
 .rbc-btn-group:first-child {
   display: none !important;
 }

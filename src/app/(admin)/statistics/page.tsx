@@ -1,12 +1,16 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Table from "@/components/Table";
-import TableSearch from "@/components/TableSearch";
 import Pagination from "@/components/Pagination";
 import Image from "next/image";
+import axiosAdmin from "@/api/axiosAdmin";
 
+/* ----------------------------------------- */
+/* 데이터 타입 */
+/* ----------------------------------------- */
 interface Statistics {
-  id: string; // Unique ID for React key
+  id: string;
   merchantCode: string;
   merchantName: string;
   paymentDate: string;
@@ -19,80 +23,153 @@ interface Statistics {
   ratioPercentage: number;
 }
 
-const columns = [
-  {
-    header: "가맹점 정보",
-    accessor: "info",
-  },
-  {
-    header: "거래 횟수",
-    accessor: "transactionCount",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "거래 비중(%)",
-    accessor: "transactionRatio",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "총 금액",
-    accessor: "totalAmount",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "환불 건수",
-    accessor: "refundCount",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "환불 금액",
-    accessor: "refundAmount",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "순매출액",
-    accessor: "netAmount",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "매출 비중(%)",
-    accessor: "ratioPercentage",
-  },
-];
+interface Merchant {
+  merchantCode: string;
+  merchantName: string;
+  brandCode: string;
+  categoryCode: string;
+}
 
+interface ServerResponseBrand {
+  brandCode: string;
+  brandName: string;
+  categoryCode: string;
+  categoryName: string;
+}
+
+interface BrandServer {
+  brand_code: string;
+  brand_name: string;
+  category_code: string;
+  category_name: string;
+}
+
+/* ----------------------------------------- */
+/* 정렬 옵션 */
+/* ----------------------------------------- */
+const sortOptions: any = {
+  paymentDate: { asc: "date_asc", desc: "date_desc" },
+  transactionCount: { asc: "transaction_asc", desc: "transaction_desc" },
+  transactionRatio: { asc: "ratio_asc", desc: "ratio_desc" },
+  totalAmount: { asc: "amount_asc", desc: "amount_desc" },
+  refundCount: { asc: "refund_asc", desc: "refund_desc" },
+  refundAmount: { asc: "refundAmount_asc", desc: "refundAmount_desc" },
+  netAmount: { asc: "net_asc", desc: "net_desc" },
+  ratioPercentage: { asc: "percentage_asc", desc: "percentage_desc" },
+};
+
+/* 정렬 화살표 */
+const SortArrow = ({ active, order }: any) => {
+  if (!active) return <span className="ml-1 text-gray-400">↕</span>;
+  return (
+    <span className="ml-1 text-lamaPurple font-bold">
+      {order === "asc" ? "▲" : "▼"}
+    </span>
+  );
+};
+
+/* ----------------------------------------- */
+/* 메인 페이지 */
+/* ----------------------------------------- */
 export default function StatisticsPage() {
   const [statistics, setStatistics] = useState<Statistics[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
 
-  const fetchStatistics = async (start?: string, end?: string) => {
+  const [page, setPage] = useState(1);
+  const size = 10;
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  const [sortField, setSortField] =
+    useState<keyof typeof sortOptions>("paymentDate");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  /* 필터 상태 */
+  const [merchantList, setMerchantList] = useState<Merchant[]>([]);
+  const [categoryList, setCategoryList] = useState<BrandServer[]>([]);
+  const [brandList, setBrandList] = useState<BrandServer[]>([]);
+
+  const [selectedMerchant, setSelectedMerchant] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
+
+  /* ----------------------------------------- */
+  /* Select 옵션 로드 */
+  /* ----------------------------------------- */
+  useEffect(() => {
+    const loadOptions = async () => {
+      try {
+        /* 가맹점 */
+        const merchantRes = await axiosAdmin.get("/api/merchants");
+        setMerchantList(merchantRes.data);
+
+        /* 브랜드 + 카테고리 */
+        const serverRes = await axiosAdmin.get("/api/servers");
+        const serverData: ServerResponseBrand[] = serverRes.data;
+
+        const converted: BrandServer[] = serverData.map((item) => ({
+          brand_code: item.brandCode,
+          brand_name: item.brandName,
+          category_code: item.categoryCode,
+          category_name: item.categoryName,
+        }));
+
+        /* 카테고리 중복 제거 */
+        const categoryMap = new Map<string, BrandServer>();
+        converted.forEach((item) => {
+          if (!categoryMap.has(item.category_code))
+            categoryMap.set(item.category_code, item);
+        });
+
+        setCategoryList([...categoryMap.values()]);
+        setBrandList(converted);
+      } catch (err) {
+        console.log("옵션 조회 실패", err);
+      }
+    };
+
+    loadOptions();
+  }, []);
+
+  /* ----------------------------------------- */
+  /* 통계 조회 API */
+  /* ----------------------------------------- */
+  const fetchStatistics = async (
+    start?: string,
+    end?: string,
+    pageNum: number = page,
+    sortF: string = sortField,
+    sortO: "asc" | "desc" = sortOrder
+  ) => {
     setLoading(true);
-    setError(null);
+
     try {
-      const params = new URLSearchParams();
-      if (start) params.append("startDate", start);
-      if (end) params.append("endDate", end);
-      const res = await fetch(`http://localhost:8000/api/statistics?${params}`);
-      if (!res.ok) throw new Error("데이터를 불러올 수 없습니다.");
-      const data = await res.json();
-      const normalized: Statistics[] = data.map((item: any, index: number) => ({
-        id: `${item.merchantCode}-${item.paymentDate}-${index}`, // 고유 ID 생성
-        merchantCode: item.merchantCode ?? "-",
-        merchantName: item.merchantName ?? "-",
-        paymentDate: item.paymentDate ?? "-",
-        transactionCount: item.transactionCount ?? 0,
-        transactionRatio: item.transactionRatio ?? 0,
-        totalAmount: item.totalAmount ?? 0,
-        refundCount: item.refundCount ?? 0,
-        refundAmount: item.refundAmount ?? 0,
-        netAmount: item.netAmount ?? 0,
-        ratioPercentage: item.ratioPercentage ?? 0,
-      }));
-      setStatistics(normalized);
-    } catch (err: any) {
-      setError(err.message ?? "알 수 없는 오류 발생");
+      const params: any = {
+        page: pageNum,
+        size,
+        sort: sortOptions[sortF][sortO],
+      };
+
+      if (start) params.startDate = start;
+      if (end) params.endDate = end;
+      if (selectedMerchant) params.merchantCode = selectedMerchant;
+      if (selectedCategory) params.categoryCode = selectedCategory;
+      if (selectedBrand) params.brandCode = selectedBrand;
+
+      const res = await axiosAdmin.get("/api/statistics", { params });
+      const json = res.data;
+
+      setStatistics(
+        json.content.map((item: any, idx: number) => ({
+          id: `${item.merchantCode}-${item.paymentDate}-${idx}`,
+          ...item,
+        }))
+      );
+
+      setPage(json.page);
+      setTotalPages(json.totalPages);
     } finally {
       setLoading(false);
     }
@@ -102,6 +179,137 @@ export default function StatisticsPage() {
     fetchStatistics();
   }, []);
 
+  /* ----------------------------------------- */
+  /* 정렬 */
+  /* ----------------------------------------- */
+  const handleSort = (field: keyof typeof sortOptions) => {
+    const nextOrder =
+      sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(nextOrder);
+    fetchStatistics(startDate, endDate, 1, field, nextOrder);
+  };
+
+  /* ----------------------------------------- */
+  /* 테이블 컬럼 */
+  /* ----------------------------------------- */
+  const tableColumns = [
+    {
+      header: (
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => handleSort("paymentDate")}
+        >
+          가맹점 정보{" "}
+          <SortArrow active={sortField === "paymentDate"} order={sortOrder} />
+        </div>
+      ),
+      accessor: "info",
+    },
+    {
+      header: (
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => handleSort("transactionCount")}
+        >
+          거래 횟수{" "}
+          <SortArrow
+            active={sortField === "transactionCount"}
+            order={sortOrder}
+          />
+        </div>
+      ),
+      accessor: "transactionCount",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: (
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => handleSort("transactionRatio")}
+        >
+          거래 비중(%){" "}
+          <SortArrow
+            active={sortField === "transactionRatio"}
+            order={sortOrder}
+          />
+        </div>
+      ),
+      accessor: "transactionRatio",
+      className: "hidden lg:table-cell",
+    },
+    {
+      header: (
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => handleSort("totalAmount")}
+        >
+          총 금액{" "}
+          <SortArrow active={sortField === "totalAmount"} order={sortOrder} />
+        </div>
+      ),
+      accessor: "totalAmount",
+      className: "hidden lg:table-cell",
+    },
+    {
+      header: (
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => handleSort("refundCount")}
+        >
+          환불 건수{" "}
+          <SortArrow active={sortField === "refundCount"} order={sortOrder} />
+        </div>
+      ),
+      accessor: "refundCount",
+      className: "hidden lg:table-cell",
+    },
+    {
+      header: (
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => handleSort("refundAmount")}
+        >
+          환불 금액{" "}
+          <SortArrow active={sortField === "refundAmount"} order={sortOrder} />
+        </div>
+      ),
+      accessor: "refundAmount",
+      className: "hidden lg:table-cell",
+    },
+    {
+      header: (
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => handleSort("netAmount")}
+        >
+          순매출액{" "}
+          <SortArrow active={sortField === "netAmount"} order={sortOrder} />
+        </div>
+      ),
+      accessor: "netAmount",
+      className: "hidden lg:table-cell",
+    },
+    {
+      header: (
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => handleSort("ratioPercentage")}
+        >
+          매출 비중(%){" "}
+          <SortArrow
+            active={sortField === "ratioPercentage"}
+            order={sortOrder}
+          />
+        </div>
+      ),
+      accessor: "ratioPercentage",
+    },
+  ];
+
+  /* ----------------------------------------- */
+  /* Row 렌더링 */
+  /* ----------------------------------------- */
   const renderRow = (item: Statistics) => (
     <tr
       key={item.id}
@@ -109,7 +317,7 @@ export default function StatisticsPage() {
     >
       <td className="flex items-center gap-4 p-4">
         <Image
-          src={"/assignment.png"} // 통계 아이콘
+          src="/assignment.png"
           alt={item.merchantName}
           width={40}
           height={40}
@@ -120,50 +328,134 @@ export default function StatisticsPage() {
           <p className="text-xs text-gray-500">{item.paymentDate}</p>
         </div>
       </td>
-      <td className="hidden md:table-cell">{item.transactionCount.toLocaleString()}</td>
-      <td className="hidden lg:table-cell">{item.transactionRatio.toFixed(2)}%</td>
-      <td className="hidden lg:table-cell">{item.totalAmount.toLocaleString()} 원</td>
+
+      <td className="hidden md:table-cell">
+        {item.transactionCount.toLocaleString()}
+      </td>
+      <td className="hidden lg:table-cell">
+        {item.transactionRatio.toFixed(2)}%
+      </td>
+      <td className="hidden lg:table-cell">
+        {item.totalAmount.toLocaleString()} 원
+      </td>
       <td className="hidden lg:table-cell">{item.refundCount}</td>
-      <td className="hidden lg:table-cell">{item.refundAmount.toLocaleString()} 원</td>
-      <td className="hidden lg:table-cell">{item.netAmount.toLocaleString()} 원</td>
+      <td className="hidden lg:table-cell">
+        {item.refundAmount.toLocaleString()} 원
+      </td>
+      <td className="hidden lg:table-cell">
+        {item.netAmount.toLocaleString()} 원
+      </td>
       <td>{item.ratioPercentage.toFixed(2)}%</td>
     </tr>
   );
 
-  if (loading) {
-    return (
-      <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0 flex justify-center items-center">
-        <p>📊 통계 데이터를 불러오는 중...</p>
-      </div>
-    );
-  }
-  if (error) {
-    return (
-      <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0 flex justify-center items-center">
-        <p>⚠️ 오류 발생: {error}</p>
-      </div>
-    );
-  }
-
+  /* ----------------------------------------- */
+  /* 화면 렌더링 */
+  /* ----------------------------------------- */
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      {/* 상단 */}
-      <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold">이용 통계</h1>
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-          <TableSearch />
-          <div className="flex items-center gap-2">
-            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="px-3 py-2 rounded-md border border-gray-300 text-sm" />
-            <span>~</span>
-            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-3 py-2 rounded-md border border-gray-300 text-sm" />
-            <button onClick={() => fetchStatistics(startDate, endDate)} className="bg-lamaYellow text-white px-4 py-2 rounded-md font-semibold shadow hover:bg-yellow-600 transition">검색</button>
-          </div>
-        </div>
+      {/* 🔥 필터 영역 */}
+      <div className="w-full flex flex-wrap gap-3 mb-5 items-center justify-center">
+        {/* 카테고리 */}
+        <select
+          value={selectedCategory}
+          onChange={(e) => {
+            setSelectedCategory(e.target.value);
+            setSelectedBrand("");
+            setSelectedMerchant("");
+          }}
+          className="px-3 py-2 border rounded-md text-sm"
+        >
+          <option value="">전체 카테고리</option>
+          {categoryList.map((c) => (
+            <option key={c.category_code} value={c.category_code}>
+              {c.category_name}
+            </option>
+          ))}
+        </select>
+
+        {/* 브랜드 */}
+        <select
+          value={selectedBrand}
+          onChange={(e) => {
+            setSelectedBrand(e.target.value);
+            setSelectedMerchant("");
+          }}
+          className="px-3 py-2 border rounded-md text-sm"
+        >
+          <option value="">전체 브랜드</option>
+          {brandList
+            .filter((b) =>
+              selectedCategory
+                ? b.category_code === selectedCategory
+                : true
+            )
+            .map((b) => (
+              <option key={b.brand_code} value={b.brand_code}>
+                {b.brand_name}
+              </option>
+            ))}
+        </select>
+
+        {/* 가맹점 */}
+        <select
+          value={selectedMerchant}
+          onChange={(e) => setSelectedMerchant(e.target.value)}
+          className="px-3 py-2 border rounded-md text-sm"
+        >
+          <option value="">전체 가맹점</option>
+
+          {merchantList
+            .filter((m) => {
+              if (selectedCategory && m.categoryCode !== selectedCategory)
+                return false;
+              if (selectedBrand && m.brandCode !== selectedBrand) return false;
+              return true;
+            })
+            .map((m) => (
+              <option key={m.merchantCode} value={m.merchantCode}>
+                {m.merchantName}
+              </option>
+            ))}
+        </select>
+
+        {/* 날짜 */}
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="px-3 py-2 border rounded-md"
+        />
+        <span>~</span>
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className="px-3 py-2 border rounded-md"
+        />
+
+        <button
+          onClick={() => fetchStatistics(startDate, endDate, 1)}
+          className="bg-lamaYellow text-white px-4 py-2 rounded-md"
+        >
+          검색
+        </button>
       </div>
-      {/* 목록 */}
-      <Table columns={columns} renderRow={renderRow} data={statistics} />
-      {/* 페이지네이션 */}
-      <Pagination />
+
+      {/* 테이블 */}
+      <Table
+        columns={tableColumns}
+        renderRow={renderRow}
+        data={statistics}
+      />
+
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={(p) =>
+          fetchStatistics(startDate, endDate, p)
+        }
+      />
     </div>
   );
 }

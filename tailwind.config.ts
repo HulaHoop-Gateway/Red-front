@@ -20,9 +20,25 @@ const config: Config = {
         lamaPurpleLight:"#F1F0FF",
         lamaYellow:"#FAE27C",
         lamaYellowLight:"#FEFCE8",
-      }
+      },
+      keyframes: {
+        fadeUpSlow: {
+          '0%': { transform: 'translateY(30px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        floatSoft: {
+          '0%, 100%': { transform: 'translate(0, 0)' },
+          '33%': { transform: 'translate(15px, -15px)' },
+          '66%': { transform: 'translate(-10px, 10px)' },
+        },
+      },
+      animation: {
+        fadeUpSlow: 'fadeUpSlow 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+        floatSoft: 'floatSoft 15s ease-in-out infinite',
+      },
     },
   },
   plugins: [],
 };
+
 export default config;
