@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Pagination from "@/components/Pagination";
-import Image from "next/image";
+import axiosAdmin from "@/api/axiosAdmin";
 
-// 이용내역 데이터 타입을 정의합니다.
 interface Transaction {
-  id: string; // React key로 사용할 고유 ID
+  id: string;
   transactionNum: string;
   memberCode: string;
   merchantCode: string;
@@ -19,95 +18,90 @@ interface Transaction {
   endDate: string;
 }
 
-// 사용자가 요청한 8개 컬럼을 정의합니다.
 const columns = [
-  {
-    header: "거래번호",
-    accessor: "transactionNum",
-  },
-  {
-    header: "회원코드",
-    accessor: "memberCode",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "가맹점코드",
-    accessor: "merchantCode",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "결제금액",
-    accessor: "amountUsed",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "결제일자",
-    accessor: "paymentDate",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "상태",
-    accessor: "status",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "시작일",
-    accessor: "startDate",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "종료일",
-    accessor: "endDate",
-    className: "hidden lg:table-cell",
-  },
+  { header: "거래번호", accessor: "transactionNum" },
+  { header: "회원코드", accessor: "memberCode", className: "hidden md:table-cell" },
+  { header: "가맹점코드", accessor: "merchantCode", className: "hidden lg:table-cell" },
+  { header: "결제금액", accessor: "amountUsed", className: "hidden md:table-cell" },
+  { header: "결제일자", accessor: "paymentDate", className: "hidden lg:table-cell" },
+  { header: "상태", accessor: "status", className: "hidden lg:table-cell" },
+  { header: "시작일", accessor: "startDate", className: "hidden lg:table-cell" },
+  { header: "종료일", accessor: "endDate", className: "hidden lg:table-cell" },
 ];
 
-const TransactionListPage = () => {
+export default function TransactionListPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
+
+  const [page, setPage] = useState(1);
+  const size = 10;
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  const [keyword, setKeyword] = useState("");
+
+  const fetchTransactions = async (pageNum: number = 1) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const params: any = {
+        page: pageNum,
+        size,
+      };
+
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+
+      const res = await axiosAdmin.get("/api/transactions", { params });
+      const json = res.data;
+
+      setTransactions(
+        json.content.map((t: any, idx: number) => ({
+          ...t,
+          id: `${t.transactionNum}-${idx}`,
+        }))
+      );
+
+      setPage(json.page);
+      setTotalPages(json.totalPages);
+    } catch (err: any) {
+      setError(err.message ?? "오류 발생");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // TODO: 향후 날짜 필터 파라미터를 API 요청에 추가해야 합니다.
-        const res = await fetch("http://localhost:8000/api/transactions");
-        if (!res.ok) {
-          throw new Error("데이터를 불러오는 데 실패했습니다.");
-        }
-        const data = await res.json();
-        // API 응답의 오타(transationNum)를 바로잡고 id를 할당합니다.
-        const transactionsWithId = data.map((t: any) => ({
-          ...t,
-          id: t.transationNum,
-          transactionNum: t.transationNum,
-        }));
-        setTransactions(transactionsWithId);
-      } catch (err: any) {
-        setError(err.message ?? "알 수 없는 오류 발생");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTransactions();
+    fetchTransactions(1);
   }, []);
 
-  // 각 행을 렌더링하는 함수입니다.
+  const filteredData = useMemo(() => {
+    if (!keyword) return transactions;
+
+    return transactions.filter((t) =>
+      Object.values(t).some((v) =>
+        String(v).toLowerCase().includes(keyword.toLowerCase())
+      )
+    );
+  }, [keyword, transactions]);
+
   const renderRow = (item: Transaction) => (
     <tr
       key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
+      className="h-[78px] border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
-      <td className="p-4">{item.transactionNum}</td>
-      <td className="hidden md:table-cell">{item.memberCode}</td>
-      <td className="hidden lg:table-cell">{item.merchantCode}</td>
-      <td className="hidden md:table-cell">{item.amountUsed.toLocaleString()}원</td>
-      <td className="hidden lg:table-cell">{item.paymentDate}</td>
-      <td className="hidden lg:table-cell">
+      <td className="px-4">{item.transactionNum}</td>
+      <td className="hidden md:table-cell px-4">{item.memberCode}</td>
+      <td className="hidden lg:table-cell px-4">{item.merchantCode}</td>
+      <td className="hidden md:table-cell px-4">
+        {item.amountUsed.toLocaleString()}원
+      </td>
+      <td className="hidden lg:table-cell px-4">{item.paymentDate}</td>
+      <td className="hidden lg:table-cell px-4">
         <span
           className={`px-2 py-1 rounded-full text-xs font-semibold ${
             item.status === "S"
@@ -118,49 +112,74 @@ const TransactionListPage = () => {
           {item.status === "S" ? "Success" : "Refund/Cancelled"}
         </span>
       </td>
-      <td className="hidden lg:table-cell">{item.startDate}</td>
-      <td className="hidden lg:table-cell">{item.endDate}</td>
+      <td className="hidden lg:table-cell px-4">{item.startDate}</td>
+      <td className="hidden lg:table-cell px-4">{item.endDate}</td>
     </tr>
   );
 
-  if (loading) {
+  if (loading)
     return (
       <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0 flex justify-center items-center">
-        <p>⏳ 이용내역 데이터를 불러오는 중...</p>
+        이용내역 불러오는 중...
       </div>
     );
-  }
-  if (error) {
+
+  if (error)
     return (
       <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0 flex justify-center items-center">
-        <p>⚠️ 오류 발생: {error}</p>
+        오류: {error}
       </div>
     );
-  }
 
   return (
-    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      {/* 상단 */}
+    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0 min-h-[750px]">
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">전체 이용내역</h1>
+
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-          <TableSearch />
+          <TableSearch
+            value={keyword}
+            onChange={(v: string) => {
+              setKeyword(v);
+              setPage(1);
+            }}
+          />
+
           <div className="flex items-center gap-2">
-            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="px-3 py-2 rounded-md border border-gray-300 text-sm" />
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="px-3 py-2 rounded-md border border-gray-300 text-sm"
+            />
             <span>~</span>
-            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-3 py-2 rounded-md border border-gray-300 text-sm" />
-            <button className="bg-lamaYellow text-white px-4 py-2 rounded-md font-semibold shadow hover:bg-yellow-600 transition">
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="px-3 py-2 rounded-md border border-gray-300 text-sm"
+            />
+
+            <button
+              onClick={() => {
+                setPage(1);
+                fetchTransactions(1);
+              }}
+              className="bg-lamaYellow text-white px-4 py-2 rounded-md font-semibold shadow hover:bg-yellow-600 transition"
+            >
               검색
             </button>
           </div>
         </div>
       </div>
-      {/* 목록 */}
-      <Table columns={columns} renderRow={renderRow} data={transactions} />
-      {/* 페이지네이션 */}
-      <Pagination />
+
+      <Table columns={columns} renderRow={renderRow} data={filteredData} />
+
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={(p) => fetchTransactions(p)}
+      />
     </div>
   );
-};
-
-export default TransactionListPage;
+}
