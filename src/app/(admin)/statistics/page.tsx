@@ -101,9 +101,12 @@ export default function StatisticsPage() {
   useEffect(() => {
     const loadOptions = async () => {
       try {
-        /* 가맹점 */
-        const merchantRes = await axiosAdmin.get("/api/merchants");
-        setMerchantList(merchantRes.data);
+        /* ✅ 가맹점 페이징 응답 처리 수정 */
+        const merchantRes = await axiosAdmin.get("/api/merchants", {
+          params: { page: 1, size: 9999 },
+        });
+
+        setMerchantList(merchantRes.data.content);
 
         /* 브랜드 + 카테고리 */
         const serverRes = await axiosAdmin.get("/api/servers");
@@ -200,8 +203,7 @@ export default function StatisticsPage() {
           className="flex items-center cursor-pointer"
           onClick={() => handleSort("paymentDate")}
         >
-          가맹점 정보{" "}
-          <SortArrow active={sortField === "paymentDate"} order={sortOrder} />
+          가맹점 정보 <SortArrow active={sortField === "paymentDate"} order={sortOrder} />
         </div>
       ),
       accessor: "info",
@@ -212,11 +214,7 @@ export default function StatisticsPage() {
           className="flex items-center cursor-pointer"
           onClick={() => handleSort("transactionCount")}
         >
-          거래 횟수{" "}
-          <SortArrow
-            active={sortField === "transactionCount"}
-            order={sortOrder}
-          />
+          거래 횟수 <SortArrow active={sortField === "transactionCount"} order={sortOrder} />
         </div>
       ),
       accessor: "transactionCount",
@@ -228,11 +226,7 @@ export default function StatisticsPage() {
           className="flex items-center cursor-pointer"
           onClick={() => handleSort("transactionRatio")}
         >
-          거래 비중(%){" "}
-          <SortArrow
-            active={sortField === "transactionRatio"}
-            order={sortOrder}
-          />
+          거래 비중(%) <SortArrow active={sortField === "transactionRatio"} order={sortOrder} />
         </div>
       ),
       accessor: "transactionRatio",
@@ -244,8 +238,7 @@ export default function StatisticsPage() {
           className="flex items-center cursor-pointer"
           onClick={() => handleSort("totalAmount")}
         >
-          총 금액{" "}
-          <SortArrow active={sortField === "totalAmount"} order={sortOrder} />
+          총 금액 <SortArrow active={sortField === "totalAmount"} order={sortOrder} />
         </div>
       ),
       accessor: "totalAmount",
@@ -257,8 +250,7 @@ export default function StatisticsPage() {
           className="flex items-center cursor-pointer"
           onClick={() => handleSort("refundCount")}
         >
-          환불 건수{" "}
-          <SortArrow active={sortField === "refundCount"} order={sortOrder} />
+          환불 건수 <SortArrow active={sortField === "refundCount"} order={sortOrder} />
         </div>
       ),
       accessor: "refundCount",
@@ -270,8 +262,7 @@ export default function StatisticsPage() {
           className="flex items-center cursor-pointer"
           onClick={() => handleSort("refundAmount")}
         >
-          환불 금액{" "}
-          <SortArrow active={sortField === "refundAmount"} order={sortOrder} />
+          환불 금액 <SortArrow active={sortField === "refundAmount"} order={sortOrder} />
         </div>
       ),
       accessor: "refundAmount",
@@ -283,8 +274,7 @@ export default function StatisticsPage() {
           className="flex items-center cursor-pointer"
           onClick={() => handleSort("netAmount")}
         >
-          순매출액{" "}
-          <SortArrow active={sortField === "netAmount"} order={sortOrder} />
+          순매출액 <SortArrow active={sortField === "netAmount"} order={sortOrder} />
         </div>
       ),
       accessor: "netAmount",
@@ -297,10 +287,7 @@ export default function StatisticsPage() {
           onClick={() => handleSort("ratioPercentage")}
         >
           매출 비중(%){" "}
-          <SortArrow
-            active={sortField === "ratioPercentage"}
-            order={sortOrder}
-          />
+          <SortArrow active={sortField === "ratioPercentage"} order={sortOrder} />
         </div>
       ),
       accessor: "ratioPercentage",
@@ -386,9 +373,7 @@ export default function StatisticsPage() {
           <option value="">전체 브랜드</option>
           {brandList
             .filter((b) =>
-              selectedCategory
-                ? b.category_code === selectedCategory
-                : true
+              selectedCategory ? b.category_code === selectedCategory : true
             )
             .map((b) => (
               <option key={b.brand_code} value={b.brand_code}>
@@ -443,18 +428,13 @@ export default function StatisticsPage() {
       </div>
 
       {/* 테이블 */}
-      <Table
-        columns={tableColumns}
-        renderRow={renderRow}
-        data={statistics}
-      />
+      <Table columns={tableColumns} renderRow={renderRow} data={statistics} />
 
+      {/* 페이지네이션 */}
       <Pagination
         currentPage={page}
         totalPages={totalPages}
-        onPageChange={(p) =>
-          fetchStatistics(startDate, endDate, p)
-        }
+        onPageChange={(p) => fetchStatistics(startDate, endDate, p)}
       />
     </div>
   );
