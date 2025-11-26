@@ -1,16 +1,16 @@
 import Image from "next/image"
 
-const UserCard = ({type}:{type:string}) => {
+const UserCard = ({ type, count }: { type: string, count?: number }) => {
   return (
     <div className='rounded-2xl odd:bg-lamaPurple even:bg-lamaYellow p-4 flex-1 min-w-[130px]'>
-        <div className="flex justify-between items-center">
-            <span className="text-[10px] bg-white px-2 py-1 rounded-full text-green-600">
-                2025/26
-            </span>
-            <Image src="/more.png" alt="" width={20} height={20}/>
-        </div>
-        <h1 className="text-3xl font-semibold my-4">1,321</h1>
-        <h2 className="capitalize text-lg font-bold text-gray-500">{type}</h2>
+      <div className="flex justify-between items-center">
+        <span className="text-[10px] bg-white px-2 py-1 rounded-full text-green-600">
+          2025/26
+        </span>
+        <Image src="/more.png" alt="" width={20} height={20} />
+      </div>
+      <h1 className="text-3xl font-semibold my-4">{count !== undefined ? count.toLocaleString() : "..."}</h1>
+      <h2 className="capitalize text-lg font-bold text-gray-500">{type}</h2>
     </div>
   );
 };

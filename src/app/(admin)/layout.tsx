@@ -13,10 +13,10 @@ export default function DashboardLayout({
         {/* 왼쪽 메뉴바 화면 */}
         <div className="w-[16%] bg-red-700 p-4 flex flex-col">
         <Link
-         href="/" 
+         href="/dashboard" 
          className="flex items-center justify-center lg:justify-center gap-2"
          >
-        <Image className="mt-3" src="/logo.png" alt="훌라후프 레드 로고" width={180} height={180}/>
+        <span className="mt-3 text-3xl font-bold text-white">Hulahoop <span className="text-red-500">Red</span></span>
         </Link>
         <Menu/>
         </div>

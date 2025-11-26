@@ -5,6 +5,7 @@ import Table from "@/components/Table";
 import Pagination from "@/components/Pagination";
 import Image from "next/image";
 import axiosAdmin from "@/api/axiosAdmin";
+import { FaFilm, FaBicycle } from "react-icons/fa";
 
 /* ----------------------------------------- */
 /* 데이터 타입 */
@@ -303,13 +304,20 @@ export default function StatisticsPage() {
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
       <td className="flex items-center gap-4 p-4">
-        <Image
-          src="/assignment.png"
-          alt={item.merchantName}
-          width={40}
-          height={40}
-          className="md:hidden xl:block w-10 h-10 rounded-full object-cover"
-        />
+        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+          {item.merchantCode.startsWith("M") ? (
+            <FaFilm className="text-xl text-gray-500" />
+          ) : item.merchantCode.startsWith("B") ? (
+            <FaBicycle className="text-xl text-gray-500" />
+          ) : (
+            <Image
+              src="/assignment.png"
+              alt={item.merchantName}
+              width={20}
+              height={20}
+            />
+          )}
+        </div>
         <div className="flex flex-col">
           <h3 className="font-semibold">{item.merchantName}</h3>
           <p className="text-xs text-gray-500">{item.paymentDate}</p>
