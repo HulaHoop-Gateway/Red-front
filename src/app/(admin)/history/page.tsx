@@ -106,10 +106,16 @@ export default function TransactionListPage() {
           className={`px-2 py-1 rounded-full text-xs font-semibold ${
             item.status === "S"
               ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
+              : item.status === "R"
+              ? "bg-red-100 text-red-700"
+              : "bg-blue-100 text-blue-700"
           }`}
         >
-          {item.status === "S" ? "Success" : "Refund/Cancelled"}
+          {item.status === "S"
+            ? "Reservation Success"
+            : item.status === "R"
+            ? "Refunded"
+            : "Pending"}
         </span>
       </td>
       <td className="hidden lg:table-cell px-4">{item.startDate}</td>
@@ -132,7 +138,7 @@ export default function TransactionListPage() {
     );
 
   return (
-    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0 min-h-[750px]">
+    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">전체 이용내역</h1>
 

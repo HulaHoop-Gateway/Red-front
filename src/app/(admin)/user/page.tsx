@@ -130,11 +130,6 @@ const UserListPage = () => {
       </td>
       <td>
         <div className="flex items-center gap-2">
-          <Link href={`/admin/user/${item.memberCode}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-              <Image src="/view.png" alt="View" width={16} height={16} />
-            </button>
-          </Link>
           {role === "admin" && (
             <FormModal table="user" type="delete" id={item.memberCode} />
           )}

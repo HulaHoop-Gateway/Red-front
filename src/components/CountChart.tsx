@@ -2,7 +2,7 @@
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const data = [
-  { name: '가맹점', value: 450 },
+  { name: '영화관', value: 450 },
   { name: '자전거', value: 250 },
 ];
 

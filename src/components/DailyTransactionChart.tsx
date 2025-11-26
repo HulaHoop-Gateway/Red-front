@@ -3,37 +3,12 @@
 import Image from 'next/image';
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-// 나중에는 오늘 날짜 기준으로 가져올 예정
-const data = [
-  {
-    name: '10-01',
-    bike: 40,
-    cinema: 24,
-  },
-  {
-    name: '10-02',
-    bike: 30,
-    cinema: 13,
-  },
-  {
-    name: '10-03',
-    bike: 20,
-    cinema: 98,
-  },
-  {
-    name: '10-04',
-    bike: 27,
-    cinema: 39,
-  },
-  {
-    name: '10-05',
-    bike: 18,
-    cinema: 48,
-  }
-];
+interface DailyTransactionChartProps {
+  data: { date: string; amount: number }[];
+}
 
 //일별 거래 차트
-const DailyTransactionChart = () => {
+const DailyTransactionChart = ({ data }: DailyTransactionChartProps) => {
   return (
     <div className='bg-white rounded-lg p-4 h-full'>
       <div className='flex justify-between items-center'>
@@ -48,12 +23,11 @@ const DailyTransactionChart = () => {
           barSize={20}
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ddd" />
-          <XAxis dataKey="name" axisLine={false} tick={{ fill: "#d1d5db" }} tickLine={false} />
+          <XAxis dataKey="date" axisLine={false} tick={{ fill: "#d1d5db" }} tickLine={false} />
           <YAxis axisLine={false} tick={{ fill: "#d1d5db" }} tickLine={false} />
           <Tooltip contentStyle={{ borderRadius: "10px", borderColor: "lightgray" }} />
           <Legend align='left' verticalAlign='top' wrapperStyle={{ paddingTop: "10px", paddingBottom: "50px" }} />
-          <Bar dataKey="bike" name={'자전거'} fill="#FAE27C" legendType='circle' radius={[10, 10, 0, 0]} />
-          <Bar dataKey="cinema" name={'영화관'} fill="#C3EBFA" legendType='circle' radius={[10, 10, 0, 0]} />
+          <Bar dataKey="amount" name={'거래금액'} fill="#FAE27C" legendType='circle' radius={[10, 10, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

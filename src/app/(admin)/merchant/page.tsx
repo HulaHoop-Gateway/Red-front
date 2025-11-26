@@ -6,6 +6,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { role } from "@/lib/data";
 import Image from "next/image";
+import { FaFilm, FaBicycle } from "react-icons/fa";
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
 
@@ -87,13 +88,20 @@ const MerchantListPage = () => {
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
       <td className="flex items-center gap-4 p-4">
-        <Image
-          src="/singleBranch.png"
-          alt={item.merchantName}
-          width={40}
-          height={40}
-          className="md:hidden xl:block w-10 h-10 rounded-full object-cover"
-        />
+        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+          {item.merchantCode.startsWith("M") ? (
+            <FaFilm className="text-xl text-gray-500" />
+          ) : item.merchantCode.startsWith("B") ? (
+            <FaBicycle className="text-xl text-gray-500" />
+          ) : (
+            <Image
+              src="/singleBranch.png"
+              alt={item.merchantName}
+              width={20}
+              height={20}
+            />
+          )}
+        </div>
         <div className="flex flex-col">
           <h3 className="font-semibold">{item.merchantName}</h3>
           <p className="text-xs text-gray-500">{item.categoryName}</p>
@@ -121,12 +129,6 @@ const MerchantListPage = () => {
 
       <td>
         <div className="flex items-center gap-2">
-          <Link href={`/admin/merchant/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-              <Image src="/view.png" alt="View" width={16} height={16} />
-            </button>
-          </Link>
-
           {role === "admin" && (
             <FormModal table="merchant" type="delete" id={item.id} />
           )}
