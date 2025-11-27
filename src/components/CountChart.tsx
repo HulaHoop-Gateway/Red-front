@@ -1,21 +1,20 @@
 "use client"
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
-const data = [
-  { name: '영화관', value: 450 },
-  { name: '자전거', value: 250 },
-];
-
 // red-700, gray-300
 const COLORS = ['#CFCEFF', '#FAE27C'];
 
-const total = data.reduce((sum, entry) => sum + entry.value, 0);
+interface CountChartProps {
+    data: { name: string; value: number }[];
+}
 
-const CountChart = () => {
+const CountChart = ({ data }: CountChartProps) => {
+    const total = data.reduce((sum, entry) => sum + entry.value, 0);
+
     return (
         <div className='bg-white rounded-xl w-full h-full p-4 flex flex-col'>
             <h1 className='text-lg font-semibold'>주요 이용 현황</h1>
-            
+
             <div className='relative w-full flex-grow mt-4'>
                 <ResponsiveContainer>
                     <PieChart>
@@ -48,7 +47,7 @@ const CountChart = () => {
                         <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: COLORS[index % COLORS.length] }} />
                         <div>
                             <p className='font-semibold text-gray-700'>{entry.name}</p>
-                            <p className='text-sm text-gray-500'>{`${entry.value}회 (${((entry.value / total) * 100).toFixed(0)}%)`}</p>
+                            <p className='text-sm text-gray-500'>{`${entry.value}회 (${total > 0 ? ((entry.value / total) * 100).toFixed(0) : 0}%)`}</p>
                         </div>
                     </div>
                 ))}

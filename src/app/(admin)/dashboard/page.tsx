@@ -39,7 +39,7 @@ const AdminPage = () => {
 
   // Map category names for CountChart
   const countChartData = data.categoryRatio.map(item => ({
-    name: item.name === 'Movie' ? '영화관' : (item.name === 'Bike' ? '자전거' : item.name),
+    name: item.name === 'Movie' || item.name === '영화' ? '영화관' : (item.name === 'Bike' || item.name === '자전거' ? '자전거' : item.name),
     value: item.value
   }));
 
@@ -74,7 +74,12 @@ const AdminPage = () => {
         </div>
         {/* 선 그래프 차트 */}
         <div className="w-full h-[500px]">
-          <UserCardLineChart />
+          <UserCardLineChart currentCounts={{
+            totalMembers: data.totalMembers,
+            totalMerchants: data.totalMerchants,
+            totalApiRequests: data.totalApiRequests,
+            totalTransactions: data.totalTransactions
+          }} />
         </div>
       </div>
       {/* 오른쪽 */}
