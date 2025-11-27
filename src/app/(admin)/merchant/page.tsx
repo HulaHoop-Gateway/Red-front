@@ -53,9 +53,9 @@ const MerchantListPage = () => {
 
       const json = await res.json();
 
-      const list = json.content.map((m: any, idx: number) => ({
+      const list = json.content.map((m: any) => ({
         ...m,
-        id: `${m.merchantCode}-${idx}`,
+        id: m.merchantCode,
       }));
 
       setMerchants(list);
@@ -113,11 +113,10 @@ const MerchantListPage = () => {
 
       <td className="hidden lg:table-cell">
         <span
-          className={`px-2 py-1 rounded-full text-xs font-semibold ${
-            item.contractStatus === "Y"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
+          className={`px-2 py-1 rounded-full text-xs font-semibold ${item.contractStatus === "Y"
+            ? "bg-green-100 text-green-700"
+            : "bg-red-100 text-red-700"
+            }`}
         >
           {item.contractStatus === "Y" ? "Active" : "Terminated"}
         </span>
@@ -129,6 +128,9 @@ const MerchantListPage = () => {
 
       <td>
         <div className="flex items-center gap-2">
+          
+          {role === "admin" && <FormModal table="merchant" type="update" data={item} />}
+
           {role === "admin" && (
             <FormModal table="merchant" type="delete" id={item.id} />
           )}
@@ -151,18 +153,9 @@ const MerchantListPage = () => {
         <h1 className="hidden md:block text-lg font-semibold">전체 가맹점</h1>
 
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-          <TableSearch onChange={(v: string) => setKeyword(v)} />
+          <TableSearch value={keyword} onChange={(v: string) => setKeyword(v)} />
 
           <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/filter.png" alt="Filter" width={14} height={14} />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/sort.png" alt="Sort" width={14} height={14} />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/plus.png" alt="Add" width={14} height={14} />
-            </button>
 
             {role === "admin" && <FormModal table="merchant" type="create" />}
           </div>

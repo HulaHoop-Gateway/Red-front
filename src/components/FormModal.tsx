@@ -2,7 +2,8 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 // LAZY LOADING을 사용하여 폼 컴포넌트를 동적으로 임포트합니다.
 const TeacherForm = dynamic(() => import("./form/TeacherForm"), {
@@ -31,18 +32,9 @@ const FormModal = ({
   id,
 }: {
   table:
-    | "merchant"
-    | "student"
-    | "parent"
-    | "user"
-    | "class"
-    | "lesson"
-    | "exam"
-    | "assignment"
-    | "result"
-    | "attendance"
-    | "event"
-    | "announcement";
+  | "merchant"
+  | "student"
+  | "parent"
   type: "create" | "update" | "delete";
   data?: any;
   id?: string;
@@ -52,17 +44,28 @@ const FormModal = ({
     type === "create"
       ? "bg-lamaYellow"
       : type === "update"
-      ? "bg-lamaSky"
-      : "bg-lamaPurple";
+        ? "bg-lamaSky"
+        : "bg-lamaPurple";
 
   const [open, setOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // 삭제 처리 함수
   const handleDelete = async () => {
     if (!id) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/merchants/${id}`, {
+      // 테이블 타입에 따라 API 엔드포인트 결정
+      let url = `http://localhost:8000/api/${table}s/${id}`;
+
+      // merchant의 경우 id가 merchantCode이므로 그대로 사용
+      // 다른 테이블의 경우 id 처리 방식이 다를 수 있음 (필요 시 분기 처리)
+
+      const res = await fetch(url, {
         method: "DELETE",
       });
 
@@ -80,17 +83,24 @@ const FormModal = ({
   const Form = () => {
     const FormComponent = forms[table];
     return type === "delete" && id ? (
-      <div className="p-4 flex flex-col gap-4">
-        <span className="text-center font-medium">
-          모든 데이터가 삭제됩니다. 정말로 이 {table}을(를) 삭제하시겠습니까?
-        </span>
-        <button
-          onClick={handleDelete}
-          type="button" // form의 submit을 방지
-          className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center"
-        >
-          삭제
-        </button>
+      <div className="p-6 flex flex-col gap-6 items-center justify-center">
+        <div className="w-16 h-16 bg-lamaPurple rounded-full flex items-center justify-center mb-2">
+          <Image src="/delete.png" alt="delete" width={32} height={32} />
+        </div>
+        <h3 className="text-xl font-bold text-gray-800">삭제 확인</h3>
+        <p className="text-center text-gray-600">
+          정말로 이 {table} 데이터를 삭제하시겠습니까?<br />
+          이 작업은 되돌릴 수 없습니다.
+        </p>
+        <div className="flex mt-4 w-full justify-center">
+          <button
+            onClick={handleDelete}
+            type="button"
+            className="px-6 py-2 rounded-lg bg-red-700 text-white hover:bg-red-600 transition-colors"
+          >
+            삭제하기
+          </button>
+        </div>
       </div>
     ) : type === "create" || type === "update" ? (
       FormComponent ? (
@@ -105,6 +115,20 @@ const FormModal = ({
     );
   };
 
+  const modalContent = (
+    <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
+      <div className="bg-white p-4 rounded-lg relative w-[95%] md:w-[90%] lg:w-[80%] xl:w-[70%] 2xl:w-[60%] shadow-2xl">
+        <Form />
+        <div
+          className="absolute top-4 right-4 cursor-pointer hover:opacity-70 transition-opacity"
+          onClick={() => setOpen(false)}
+        >
+          <Image src="/close.png" alt="" width={14} height={14} />
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <button
@@ -113,19 +137,7 @@ const FormModal = ({
       >
         <Image src={`/${type}.png`} alt="" width={16} height={16} />
       </button>
-      {open && (
-        <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]">
-            <Form />
-            <div
-              className="absolute top-4 right-4 cursor-pointer"
-              onClick={() => setOpen(false)}
-            >
-              <Image src="/close.png" alt="" width={14} height={14} />
-            </div>
-          </div>
-        </div>
-      )}
+      {open && isClient && createPortal(modalContent, document.body)}
     </>
   );
 };
