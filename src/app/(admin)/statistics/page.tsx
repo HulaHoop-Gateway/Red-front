@@ -96,6 +96,9 @@ export default function StatisticsPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
 
+  /* 일별/월별 뷰 모드 */
+  const [viewMode, setViewMode] = useState<"day" | "month">("day");
+
   /* ----------------------------------------- */
   /* Select 옵션 로드 */
   /* ----------------------------------------- */
@@ -110,8 +113,10 @@ export default function StatisticsPage() {
         setMerchantList(merchantRes.data.content);
 
         /* 브랜드 + 카테고리 */
-        const serverRes = await axiosAdmin.get("/api/servers");
-        const serverData: ServerResponseBrand[] = serverRes.data;
+        const serverRes = await axiosAdmin.get("/api/servers", {
+          params: { page: 1, size: 9999 },
+        });
+        const serverData: ServerResponseBrand[] = serverRes.data.content;
 
         const converted: BrandServer[] = serverData.map((item) => ({
           brand_code: item.brandCode,
@@ -161,6 +166,7 @@ export default function StatisticsPage() {
       if (selectedMerchant) params.merchantCode = selectedMerchant;
       if (selectedCategory) params.categoryCode = selectedCategory;
       if (selectedBrand) params.brandCode = selectedBrand;
+      params.groupBy = viewMode; // ✅ 일별/월별 그룹화
 
       const res = await axiosAdmin.get("/api/statistics", { params });
       const json = res.data;
@@ -181,7 +187,7 @@ export default function StatisticsPage() {
 
   useEffect(() => {
     fetchStatistics();
-  }, []);
+  }, [viewMode]); // ✅ viewMode 변경 시 자동 새로고침
 
   /* ----------------------------------------- */
   /* 정렬 */
@@ -349,6 +355,34 @@ export default function StatisticsPage() {
   /* ----------------------------------------- */
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
+      {/* 🔥 일별/월별 전환 버튼 */}
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => {
+            setViewMode("day");
+            setPage(1);
+          }}
+          className={`px-4 py-2 rounded-md font-semibold transition ${viewMode === "day"
+            ? "bg-lamaPurple text-white"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+        >
+          📅 일별 통계
+        </button>
+        <button
+          onClick={() => {
+            setViewMode("month");
+            setPage(1);
+          }}
+          className={`px-4 py-2 rounded-md font-semibold transition ${viewMode === "month"
+            ? "bg-lamaPurple text-white"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+        >
+          📊 월별 통계
+        </button>
+      </div>
+
       {/* 🔥 필터 영역 */}
       <div className="w-full flex flex-wrap gap-3 mb-5 items-center justify-center">
         {/* 카테고리 */}

@@ -16,10 +16,12 @@ interface Transaction {
   status: string;
   startDate: string;
   endDate: string;
+  originalTransactionNum?: number;
 }
 
 const columns = [
   { header: "거래번호", accessor: "transactionNum" },
+  { header: "원본번호", accessor: "originalTransactionNum", className: "hidden lg:table-cell" },
   { header: "회원코드", accessor: "memberCode", className: "hidden md:table-cell" },
   { header: "가맹점코드", accessor: "merchantCode", className: "hidden lg:table-cell" },
   { header: "결제금액", accessor: "amountUsed", className: "hidden md:table-cell" },
@@ -95,6 +97,9 @@ export default function TransactionListPage() {
       className="h-[78px] border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
       <td className="px-4">{item.transactionNum}</td>
+      <td className="hidden lg:table-cell px-4 text-gray-500">
+        {item.originalTransactionNum ? `#${item.originalTransactionNum}` : "-"}
+      </td>
       <td className="hidden md:table-cell px-4">{item.memberCode}</td>
       <td className="hidden lg:table-cell px-4">{item.merchantCode}</td>
       <td className="hidden md:table-cell px-4">
@@ -103,19 +108,18 @@ export default function TransactionListPage() {
       <td className="hidden lg:table-cell px-4">{item.paymentDate}</td>
       <td className="hidden lg:table-cell px-4">
         <span
-          className={`px-2 py-1 rounded-full text-xs font-semibold ${
-            item.status === "S"
-              ? "bg-green-100 text-green-700"
-              : item.status === "R"
+          className={`px-2 py-1 rounded-full text-xs font-semibold ${item.status === "S"
+            ? "bg-green-100 text-green-700"
+            : item.status === "R"
               ? "bg-red-100 text-red-700"
               : "bg-blue-100 text-blue-700"
-          }`}
+            }`}
         >
           {item.status === "S"
             ? "Reservation Success"
             : item.status === "R"
-            ? "Refunded"
-            : "Pending"}
+              ? "Refunded"
+              : "Pending"}
         </span>
       </td>
       <td className="hidden lg:table-cell px-4">{item.startDate}</td>
