@@ -56,7 +56,8 @@ export default function TransactionListPage() {
       };
 
       if (startDate) params.startDate = startDate;
-      if (endDate) params.endDate = endDate;
+      // 종료일에 시간을 추가하여 해당 날짜의 모든 데이터 포함 (23:59:59까지)
+      if (endDate) params.endDate = endDate + " 23:59:59";
 
       const res = await axiosAdmin.get("/api/transactions", { params });
       const json = res.data;
@@ -122,8 +123,12 @@ export default function TransactionListPage() {
               : "Pending"}
         </span>
       </td>
-      <td className="hidden lg:table-cell px-4">{item.startDate}</td>
-      <td className="hidden lg:table-cell px-4">{item.endDate}</td>
+      <td className="hidden lg:table-cell px-4">
+        {item.startDate?.replace("T", " ")}
+      </td>
+      <td className="hidden lg:table-cell px-4">
+        {item.endDate?.replace("T", " ")}
+      </td>
     </tr>
   );
 

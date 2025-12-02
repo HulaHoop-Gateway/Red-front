@@ -10,6 +10,7 @@ const localizer = momentLocalizer(moment);
 
 const BigCalendar = () => {
   const [view, setView] = useState<View>(Views.WORK_WEEK);
+  const [date, setDate] = useState(new Date(2025, 11, 12)); // 12월 12일, 2025 (월은 0부터 시작)
 
   const handleOnChangeView = (selectedView: View) => {
     setView(selectedView);
@@ -25,8 +26,10 @@ const BigCalendar = () => {
       view={view}
       style={{ height: "98%" }}
       onView={handleOnChangeView}
-      min={new Date(2025, 1, 0, 8, 0, 0)}
-      max={new Date(2025, 1, 0, 17, 0, 0)}
+      date={date}
+      onNavigate={(newDate) => setDate(newDate)}
+      min={new Date(2025, 11, 12, 8, 0, 0)}
+      max={new Date(2025, 11, 12, 17, 0, 0)}
     />
   );
 };

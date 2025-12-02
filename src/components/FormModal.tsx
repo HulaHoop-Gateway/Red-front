@@ -70,13 +70,16 @@ const FormModal = ({
       });
 
       if (!res.ok) {
-        throw new Error("삭제에 실패했습니다.");
+        // 백엔드에서 반환한 에러 메시지 추출
+        const errorMessage = await res.text();
+        throw new Error(errorMessage || "삭제에 실패했습니다.");
       }
       // 성공 시 페이지 새로고침
       window.location.reload();
     } catch (error) {
       console.error(error);
-      alert("삭제 작업에 실패했습니다.");
+      // 백엔드의 구체적인 에러 메시지 표시
+      alert(error instanceof Error ? error.message : "삭제 작업에 실패했습니다.");
     }
   };
 

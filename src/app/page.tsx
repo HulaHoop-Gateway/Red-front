@@ -48,10 +48,11 @@ const LoginPage = () => {
         password: password,
       });
 
-      const token = response.data.token;
+      const { token, adminName } = response.data;
 
       if (token) {
         localStorage.setItem("admin_jwt", token);
+        localStorage.setItem("admin_name", adminName || "관리자");
 
         console.log("관리자 로그인 성공! 토큰 저장됨:", token);
 
@@ -129,19 +130,17 @@ const LoginPage = () => {
                   <label
                     htmlFor="username"
                     className={`absolute left-0 transition-all duration-300 pointer-events-none
-                      ${
-                        inputValues.username || focusedField === "username"
-                          ? "-top-6 text-sm font-bold text-red-600"
-                          : "top-4 text-lg text-gray-400"
+                      ${inputValues.username || focusedField === "username"
+                        ? "-top-6 text-sm font-bold text-red-600"
+                        : "top-4 text-lg text-gray-400"
                       }`}
                   >
                     아이디
                   </label>
 
                   <div
-                    className={`absolute bottom-0 left-0 h-0.5 bg-red-600 transition-all duration-300 ${
-                      focusedField === "username" ? "w-full" : "w-0"
-                    }`}
+                    className={`absolute bottom-0 left-0 h-0.5 bg-red-600 transition-all duration-300 ${focusedField === "username" ? "w-full" : "w-0"
+                      }`}
                   />
                 </div>
 
@@ -164,19 +163,17 @@ const LoginPage = () => {
                   <label
                     htmlFor="password"
                     className={`absolute left-0 transition-all duration-300 pointer-events-none
-                      ${
-                        inputValues.password || focusedField === "password"
-                          ? "-top-6 text-sm font-bold text-red-600"
-                          : "top-4 text-lg text-gray-400"
+                      ${inputValues.password || focusedField === "password"
+                        ? "-top-6 text-sm font-bold text-red-600"
+                        : "top-4 text-lg text-gray-400"
                       }`}
                   >
                     비밀번호
                   </label>
 
                   <div
-                    className={`absolute bottom-0 left-0 h-0.5 bg-red-600 transition-all duration-300 ${
-                      focusedField === "password" ? "w-full" : "w-0"
-                    }`}
+                    className={`absolute bottom-0 left-0 h-0.5 bg-red-600 transition-all duration-300 ${focusedField === "password" ? "w-full" : "w-0"
+                      }`}
                   />
 
                   <button
@@ -233,14 +230,12 @@ const LoginPage = () => {
                   disabled={isLoading}
                 >
                   <div
-                    className={`absolute inset-0 bg-red-600 transition-transform duration-300 ${
-                      isLoading ? "opacity-70" : "group-hover:scale-105"
-                    }`}
+                    className={`absolute inset-0 bg-red-600 transition-transform duration-300 ${isLoading ? "opacity-70" : "group-hover:scale-105"
+                      }`}
                   />
                   <div
-                    className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full ${
-                      isLoading ? "hidden" : "group-hover:translate-x-full"
-                    } transition-transform duration-700`}
+                    className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full ${isLoading ? "hidden" : "group-hover:translate-x-full"
+                      } transition-transform duration-700`}
                   />
                   <div className="relative px-8 py-5 flex items-center justify-between text-white">
                     <span className="text-lg font-bold">
