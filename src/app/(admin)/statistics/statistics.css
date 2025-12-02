@@ -1,0 +1,143 @@
+.statistics-container {
+    background-color: white;
+    padding: 1rem 1rem 0 1rem;
+    border-radius: 0.375rem;
+    display: flex;
+    flex-direction: column;
+    height: calc(133.3vh - 120px);
+    margin: 0;
+}
+
+.statistics-mode-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.statistics-mode-button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.statistics-mode-button.active {
+    background-color: rgb(168, 85, 247);
+    color: white;
+}
+
+.statistics-mode-button.inactive {
+    background-color: rgb(229, 231, 235);
+    color: rgb(55, 65, 81);
+}
+
+.statistics-mode-button.inactive:hover {
+    background-color: rgb(209, 213, 219);
+}
+
+.statistics-filters {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.statistics-select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+}
+
+.statistics-date-input {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+}
+
+.statistics-search-button {
+    background-color: #fbbf24;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+}
+
+.statistics-search-button:hover {
+    background-color: #f59e0b;
+}
+
+.statistics-table-container {
+    flex: 1;
+    overflow: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    margin-bottom: 0;
+}
+
+.statistics-summary {
+    background-color: rgb(249, 250, 251);
+    padding: 0.25rem;
+    border-radius: 0.375rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+.statistics-summary-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.375rem;
+    color: rgb(168, 85, 247);
+}
+
+.statistics-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+    .statistics-summary-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+.statistics-summary-card {
+    background-color: white;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.statistics-summary-label {
+    font-size: 0.75rem;
+    color: rgb(107, 114, 128);
+    margin-bottom: 0.25rem;
+}
+
+.statistics-summary-value {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.statistics-summary-value.blue {
+    color: rgb(37, 99, 235);
+}
+
+.statistics-summary-value.green {
+    color: rgb(22, 163, 74);
+}
+
+.statistics-summary-value.orange {
+    color: rgb(234, 88, 12);
+}
+
+.statistics-summary-value.red {
+    color: rgb(220, 38, 38);
+}
+
+.statistics-summary-value.purple {
+    color: rgb(147, 51, 234);
+}

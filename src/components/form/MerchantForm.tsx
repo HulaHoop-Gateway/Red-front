@@ -35,7 +35,7 @@ const MerchantForm = ({
       merchantCode: data?.merchantCode || "",
       merchantName: data?.merchantName || "",
       businessId: data?.businessId || "",
-      brandCode: data?.brandCode || "", 
+      brandCode: data?.brandCode || "",
       categoryName: data?.categoryName || "",
       registrationDate: data?.registrationDate || "",
       terminationDate: data?.terminationDate || "",
@@ -60,14 +60,17 @@ const MerchantForm = ({
       });
 
       if (!res.ok) {
-        throw new Error(`${type === "update" ? "수정" : "생성"}에 실패했습니다.`);
+        // 백엔드에서 반환한 에러 메시지 추출
+        const errorMessage = await res.text();
+        throw new Error(errorMessage || `${type === "update" ? "수정" : "생성"}에 실패했습니다.`);
       }
 
       // 성공 시 페이지 새로고침으로 목록 갱신
       window.location.reload();
     } catch (error) {
       console.error(error);
-      alert("작업에 실패했습니다.");
+      // 백엔드의 구체적인 에러 메시지 표시
+      alert(error instanceof Error ? error.message : "작업에 실패했습니다.");
     }
   };
 
